@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Mind: Subtraction Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+        
+        body {
+            font-family: 'Fredoka', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.5s cubic-bezier(0.36, 0, 0.66, -0.56) both;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .check-btn-container {
+            min-height: 32px;
+        }
+    </style>
+</head>
+<body class="bg-orange-50 min-h-screen">
+
+    <div id="app" class="max-w-4xl mx-auto min-h-screen flex flex-col">
+        <!-- Screens will be injected here -->
+    </div>
+
+    <script>
+        // --- State Management ---
+        let state = {
+            view: 'menu', 
+            step: 0,
+            currentProblem: null,
+            score: 0,
+            feedback: null,
+        };
+
+        // --- Icons ---
+        const icons = {
+            brain: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.105 4 4 0 0 0 5.327 2.022A3 3 0 1 0 12 18"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.52 8.105 4 4 0 0 1-5.327 2.022A3 3 0 1 1 12 18"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.5 9.912a2.5 2.5 0 0 0-5-1.912"/><path d="M6.5 9.912a2.5 2.5 0 0 1 5-1.912"/><path d="M12 18v-5"/></svg>`,
+            book: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M12 6v12"/></svg>`,
+            minus: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`,
+            back: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>`,
+            star: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+            refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`
+        };
+
+        // --- Logic ---
+
+        function getLandmarkSplit(n) {
+            const ones = n % 10;
+            const tens = Math.floor(n / 10) * 10;
+            if (ones >= 5) {
+                return { landmark: tens + 5, extra: ones - 5 };
+            } else {
+                return { landmark: tens, extra: ones };
+            }
+        }
+
+        function generateProblem() {
+            // Generate friendly subtraction problems where leftovers are positive
+            let n1 = Math.floor(Math.random() * 60) + 30; // 30-90
+            let n2 = Math.floor(Math.random() * (n1 - 15)) + 11; 
+            
+            let s1 = getLandmarkSplit(n1);
+            let s2 = getLandmarkSplit(n2);
+            
+            // Adjust to ensure the small part subtraction isn't negative
+            if (s1.extra < s2.extra) {
+                n1 += (s2.extra - s1.extra);
+            }
+
+            // Recalculate splits after adjustment
+            const finalS1 = getLandmarkSplit(n1);
+            const finalS2 = getLandmarkSplit(n2);
+
+            state.currentProblem = {
+                num1: n1, num2: n2,
+                l1: finalS1.landmark, e1: finalS1.extra,
+                l2: finalS2.landmark, e2: finalS2.extra
+            };
+            state.step = 0;
+            state.feedback = null;
+            render();
+        }
+
+        function checkStep(inputId, expected) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const value = parseInt(input.value);
+
+            if (value === expected) {
+                state.feedback = { type: 'success', message: 'Perfect! Keep going!' };
+                state.step++;
+                setTimeout(() => {
+                    state.feedback = null;
+                    render();
+                }, 800);
+            } else {
+                state.feedback = { type: 'error', message: 'Not quite! Check your math.' };
+                render();
+            }
+        }
+
+        function navigate(view) {
+            state.view = view;
+            state.step = 0;
+            state.feedback = null;
+            if (view === 'practice') {
+                generateProblem();
+            } else {
+                render();
+            }
+        }
+
+        // --- UI Rendering ---
+
+        function render() {
+            const container = document.getElementById('app');
+            container.innerHTML = '';
+
+            if (state.view === 'menu') container.innerHTML = renderMenu();
+            else if (state.view === 'learn') container.innerHTML = renderLearn();
+            else if (state.view === 'practice') container.innerHTML = renderPractice();
+        }
+
+        function renderMenu() {
+            return `
+                <div class="flex flex-col items-center justify-center flex-grow p-6">
+                    <div class="text-center mb-12">
+                        <div class="flex justify-center mb-4 text-orange-600 drop-shadow-lg animate-pulse">${icons.brain}</div>
+                        <h1 class="text-5xl font-black text-orange-700 mb-2 tracking-tight">Subtraction Mind</h1>
+                        <p class="text-xl text-orange-400 font-medium italic">Master Quick Subtraction!</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                        <button onclick="navigate('learn')" class="group p-8 bg-orange-100 hover:bg-orange-200 border-b-8 border-orange-400 rounded-[2rem] transition-all transform active:scale-95">
+                            <div class="flex flex-col items-center">
+                                <div class="mb-3 text-orange-600 group-hover:scale-110 transition-transform">${icons.book}</div>
+                                <span class="text-2xl font-bold text-orange-800">Learn Quick Minus</span>
+                            </div>
+                        </button>
+                        <button onclick="navigate('practice')" class="group p-8 bg-purple-100 hover:bg-purple-200 border-b-8 border-purple-400 rounded-[2rem] transition-all transform active:scale-95">
+                            <div class="flex flex-col items-center">
+                                <div class="mb-3 text-purple-600 group-hover:scale-110 transition-transform">${icons.minus}</div>
+                                <span class="text-2xl font-bold text-purple-800">Practice Minus</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLearn() {
+            const n1 = 68;
+            const n2 = 55;
+            const s1 = getLandmarkSplit(n1);
+            const s2 = getLandmarkSplit(n2);
+
+            const steps = [
+                { t: `Solving ${n1} - ${n2}`, d: "Shortcut: Use 'Friendly' Landmarks like 0 or 5!" },
+                { t: `${n1} is ${s1.landmark} + ${s1.extra}`, d: `Break the first number into a landmark (${s1.landmark}) and a leftover (${s1.extra}).` },
+                { t: `Step 1: ${s1.landmark} - ${s2.landmark} = ${s1.landmark-s2.landmark}`, d: "Friendly numbers are easy to subtract in your head!" },
+                { t: `Step 2: ${s1.extra} - ${s2.extra} = ${s1.extra-s2.extra}`, d: "Now subtract the small leftovers." },
+                { t: `Final: ${n1-n2}`, d: `Just join them back: ${s1.landmark-s2.landmark} + ${s1.extra-s2.extra}` }
+            ];
+
+            const current = steps[Math.min(state.step, steps.length - 1)];
+
+            return `
+                <div class="p-6 flex flex-col min-h-screen">
+                    <button onclick="navigate('menu')" class="flex items-center gap-2 text-gray-500 font-bold mb-8">
+                        ${icons.back} Menu
+                    </button>
+                    <div class="max-w-2xl mx-auto w-full bg-white rounded-[3rem] shadow-xl overflow-hidden bounce-in border-4 border-white">
+                        <div class="p-6 bg-orange-500 text-white text-center">
+                            <h2 class="text-2xl font-bold tracking-wide uppercase">Subtraction Shortcut</h2>
+                        </div>
+                        <div class="p-12 text-center flex flex-col justify-center min-h-[350px] bg-white">
+                            <h3 class="text-5xl font-black text-gray-800 mb-6 leading-tight">${current.t}</h3>
+                            <p class="text-2xl text-gray-400 italic font-medium">"${current.d}"</p>
+                        </div>
+                        <div class="p-8 bg-gray-50 flex flex-col items-center gap-6">
+                            <div class="flex gap-3">
+                                ${steps.map((_, i) => `<div class="h-4 w-4 rounded-full ${i <= state.step ? `bg-orange-500 shadow-md` : 'bg-gray-200'} transition-all"></div>`).join('')}
+                            </div>
+                            ${state.step < steps.length - 1 
+                                ? `<button onclick="state.step++; render()" class="px-12 py-5 bg-orange-500 text-white rounded-full font-bold text-2xl shadow-lg hover:brightness-110 transition-all">Next Step</button>`
+                                : `<button onclick="navigate('menu')" class="px-12 py-5 bg-blue-500 text-white rounded-full font-bold text-2xl shadow-lg hover:brightness-110 transition-all">Start Practicing!</button>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPractice() {
+            const p = state.currentProblem;
+            const expectedOrder = getPracticeOrder(p);
+
+            return `
+                <div class="p-6 flex flex-col min-h-screen">
+                    <div class="flex justify-between items-center mb-8">
+                        <button onclick="navigate('menu')" class="flex items-center gap-2 text-gray-600 font-bold px-4 py-2 bg-white rounded-full shadow-sm hover:bg-gray-50">
+                            ${icons.back} Exit
+                        </button>
+                        <div class="flex items-center gap-3 bg-yellow-400 px-8 py-3 rounded-full text-white font-black shadow-lg">
+                            ${icons.star} Score: ${state.score}
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[3.5rem] shadow-2xl p-10 text-center relative overflow-hidden flex-grow flex flex-col border-8 border-purple-50">
+                        ${state.feedback ? `
+                            <div class="absolute top-0 left-0 right-0 py-4 text-white font-black text-xl ${state.feedback.type === 'success' ? 'bg-green-500' : 'bg-red-500'} transition-all animate-bounce">
+                                ${state.feedback.message}
+                            </div>
+                        ` : ''}
+
+                        <div class="my-10">
+                            <span class="text-lg font-bold text-gray-400 block mb-2 uppercase tracking-widest">Solve This</span>
+                            <h2 class="text-7xl font-black text-gray-800">${p.num1} - ${p.num2}</h2>
+                        </div>
+
+                        <div class="space-y-12 flex-grow flex flex-col justify-center">
+                            <div class="flex flex-col items-center">
+                                <p class="text-xl font-bold text-purple-500 mb-6 flex items-center gap-2">
+                                    <span class="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</span> 
+                                    Break into Landmarks
+                                </p>
+                                <div class="text-4xl font-bold flex flex-wrap items-center justify-center gap-4">
+                                    <div class="flex items-center gap-2 bg-purple-50 p-6 rounded-[2rem] border-4 border-purple-100 shadow-inner">
+                                        (${renderInput(expectedOrder[0])} + ${renderInput(expectedOrder[1])})
+                                    </div>
+                                    <span class="text-5xl text-gray-300 font-light">-</span>
+                                    <div class="flex items-center gap-2 bg-purple-50 p-6 rounded-[2rem] border-4 border-purple-100 shadow-inner">
+                                        (${renderInput(expectedOrder[2])} + ${renderInput(expectedOrder[3])})
+                                    </div>
+                                </div>
+                            </div>
+
+                            ${state.step >= 4 ? `
+                            <div class="flex flex-col items-center bounce-in">
+                                <p class="text-xl font-bold text-blue-500 mb-6 flex items-center gap-2">
+                                    <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</span>
+                                    Solve the Parts
+                                </p>
+                                <div class="text-3xl font-bold flex flex-wrap items-center justify-center gap-10">
+                                    <div class="flex flex-col items-center bg-blue-50 p-4 rounded-3xl border-2 border-blue-100">
+                                        <span class="text-sm text-blue-400 mb-2 uppercase font-bold tracking-tighter">Landmarks (${p.l1} - ${p.l2})</span>
+                                        ${renderInput(expectedOrder[4])}
+                                    </div>
+                                    <span class="text-4xl text-gray-300 font-black">+</span>
+                                    <div class="flex flex-col items-center bg-blue-50 p-4 rounded-3xl border-2 border-blue-100">
+                                        <span class="text-sm text-blue-400 mb-2 uppercase font-bold tracking-tighter">Leftovers (${p.e1} - ${p.e2})</span>
+                                        ${renderInput(expectedOrder[5])}
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            ${state.step >= 6 ? `
+                            <div class="flex flex-col items-center bounce-in mt-10">
+                                <div class="bg-yellow-50 p-10 rounded-[3rem] border-4 border-yellow-400 shadow-xl w-full max-w-sm">
+                                    <p class="text-2xl font-black text-yellow-700 mb-6 uppercase tracking-widest">Final Total</p>
+                                    ${renderInput(expectedOrder[6], true)}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        ${state.step >= 7 ? `
+                            <div class="mt-12 flex flex-col items-center bounce-in">
+                                <button onclick="state.score+=10; generateProblem()" class="px-16 py-6 bg-green-500 text-white rounded-full font-black text-3xl shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-4">
+                                    ${icons.refresh} Next Problem!
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInput(data, isFinal = false) {
+            const order = getPracticeOrder(state.currentProblem);
+            const currentIdx = order.findIndex(item => item.id === data.id);
+            const isCompleted = state.step > currentIdx;
+            const isActive = state.step === currentIdx;
+
+            return `
+                <div class="relative flex flex-col items-center">
+                    <input 
+                        id="${data.id}"
+                        type="number" 
+                        ${!isActive ? 'disabled' : ''}
+                        placeholder="?"
+                        value="${isCompleted ? data.val : ''}"
+                        class="w-24 text-center ${isFinal ? 'text-5xl w-40' : 'text-3xl'} font-black p-4 bg-white rounded-2xl shadow-sm border-b-8 transition-all
+                        ${isActive ? 'border-purple-500 ring-4 ring-purple-100 outline-none animate-pulse' : 'border-gray-100 text-purple-700'}"
+                        onkeydown="if(event.key==='Enter') checkStep('${data.id}', ${data.val})"
+                        oninput="this.parentElement.querySelector('.check-btn-container').style.opacity = this.value ? '1' : '0.5'"
+                    />
+                    <div class="check-btn-container h-10 mt-2">
+                        ${isActive ? `
+                            <button onclick="checkStep('${data.id}', ${data.val})" class="bg-purple-600 text-white px-5 py-2 rounded-full font-bold text-sm shadow-md active:bg-purple-800 hover:brightness-110 transition-all">
+                                CHECK
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPracticeOrder(p) {
+            return [
+                { id: 'l1', val: p.l1 },
+                { id: 'e1', val: p.e1 },
+                { id: 'l2', val: p.l2 },
+                { id: 'e2', val: p.e2 },
+                { id: 'l_res', val: p.l1 - p.l2 },
+                { id: 'e_res', val: p.e1 - p.e2 },
+                { id: 'final', val: p.num1 - p.num2 }
+            ];
+        }
+
+        // --- Init ---
+        render();
+
+    </script>
+</body>
+</html>
