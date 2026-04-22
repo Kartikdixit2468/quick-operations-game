@@ -402,9 +402,9 @@
           const o2 = n2 % 10;
 
           // Rules:
-          // 1. No zeros (too simple)
+          // 1. No zeros for the FIRST number (ensures we always have something to break down)
           // 2. o1 >= o2 strictly (prevents negative ones calculations like 51 - 38 = 1 - 8 = -7)
-          if (o1 !== 0 && o2 !== 0 && o1 >= o2) {
+          if (o1 !== 0 && o1 >= o2) {
             break;
           }
         }
@@ -416,7 +416,8 @@
           s2: getSplit(n2),
           opts1: generateOptions(n1),
           opts2: generateOptions(n2),
-          isSimple: n1 % 10 === n2 % 10, // Flag for 1-step bonus
+          isSimple: n1 % 10 === n2 % 10, // Flag for 1-step bonus (e.g. 45 - 25)
+          isN2Zero: n2 % 10 === 0, // Flag to skip breaking down the 2nd number (e.g. 38 - 20)
         };
         state.step = 0;
         state.view = "practice";
@@ -435,6 +436,7 @@
           s1: getSplit(n1),
           s2: getSplit(n2),
           isSimple: false,
+          isN2Zero: false,
         };
         state.step = 0;
         state.view = "learn";
@@ -527,13 +529,11 @@
           const currentNum = state.step === 0 ? p.num1 : p.num2;
           const currentSplit = state.step === 0 ? p.s1.display : p.s2.display;
 
-          // Clear, specific history logging
           state.history.push(
             `Step ${state.step + 1}: ${currentNum} = ${currentSplit}`,
           );
           updateHistoryStack();
 
-          // Sync Active Sum
           let nextSum = "";
           if (state.step === 0) {
             nextSum = `(${p.s1.display}) - ${p.num2}`;
@@ -543,7 +543,12 @@
           triggerEvolution(nextSum);
 
           setTimeout(() => {
-            state.step++;
+            if (state.step === 0 && p.isN2Zero) {
+              // SKIP breakdown of second number if it already ends in 0
+              state.step = 2;
+            } else {
+              state.step++;
+            }
             state.isProcessing = false;
             renderStepContent();
           }, 800);
@@ -573,7 +578,7 @@
           input.classList.add("border-green-500", "bg-green-50");
           const total = p.num1 - p.num2;
 
-          // BONUS SIMPLE PATH: Skips straight to the end
+          // BONUS SIMPLE PATH: Skips straight to the end (e.g. 45 - 25)
           if (p.isSimple) {
             state.history.push(`Bonus: ${p.num1} - ${p.num2} = ${total}`);
             updateHistoryStack();
@@ -590,10 +595,11 @@
             return;
           }
 
-          // NORMAL PATH
+          // NORMAL PATH (including isN2Zero path)
           let summary = "";
           if (state.step === 2) {
-            summary = `Step 3: Tens ➔ ${p.s1.tens} - ${p.s2.tens} = ${p.s1.tens - p.s2.tens}`;
+            const stepLabel = p.isN2Zero ? "Step 2" : "Step 3";
+            summary = `${stepLabel}: Tens ➔ ${p.s1.tens} - ${p.s2.tens} = ${p.s1.tens - p.s2.tens}`;
           } else if (state.step === 3) {
             summary = `Step 4: Ones ➔ ${p.s1.ones} - ${p.s2.ones} = ${p.s1.ones - p.s2.ones}`;
           } else if (state.step === 4) {
@@ -605,19 +611,29 @@
             updateHistoryStack();
           }
 
-          // Active Sum evolution - keeping the context alive!
+          // Active Sum evolution
           let nextSum = "";
           if (state.step === 2) {
-            nextSum = `${p.s1.tens - p.s2.tens} + (${formatSub(p.s1.ones, p.s2.ones)})`;
+            if (p.isN2Zero) {
+              nextSum = `${p.num1} - ${p.num2} = ?`; // Skip ones step, go to final focus
+            } else {
+              nextSum = `${p.s1.tens - p.s2.tens} + (${formatSub(p.s1.ones, p.s2.ones)})`;
+            }
           } else if (state.step === 3) {
-            nextSum = `${p.num1} - ${p.num2} = ?`; // Restore focus to the original problem before the final check
+            nextSum = `${p.num1} - ${p.num2} = ?`;
           } else if (state.step === 4) {
             nextSum = `${p.num1} - ${p.num2} = ${total}`;
           }
           if (nextSum) triggerEvolution(nextSum);
 
           setTimeout(() => {
-            state.step++;
+            if (state.step === 2 && p.isN2Zero) {
+              // SKIP ones subtraction if second number ended in 0
+              state.step = 4;
+            } else {
+              state.step++;
+            }
+
             state.isProcessing = false;
             if (state.step === 5) {
               state.score += 20;
@@ -805,10 +821,22 @@
 
       function renderPracticeGame(area, tree, p) {
         tree.innerHTML = "";
-        const stack = state.history
+
+        // Define if this is the final completed state
+        const isFinished =
+          (p.isSimple && state.step >= 1) || (!p.isSimple && state.step >= 5);
+
+        let stackHtml = "";
+
+        // Inject the original sum title at the top of the history stack when finished
+        if (isFinished) {
+          stackHtml += `<div class="text-5xl lg:text-6xl font-black text-gray-900 mb-6 drop-shadow-sm fade-in">${p.num1} - ${p.num2}</div>`;
+        }
+
+        stackHtml += state.history
           .map((txt) => `<div class="history-item show">${txt}</div>`)
           .join("");
-        document.getElementById("stack-area").innerHTML = stack;
+        document.getElementById("stack-area").innerHTML = stackHtml;
 
         const textContainer = document.getElementById("active-container");
         if (state.step === 0 && !state.activeSum) {
@@ -875,8 +903,9 @@
 
         let html = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
         if (state.step === 2) {
+          const stepLabel = p.isN2Zero ? "2" : "3";
           html += `<div class="w-full p-6 bg-blue-50 rounded-[3rem] border-2 border-blue-100 flex flex-col items-center fade-in">
-                    <span class="text-xl font-bold text-blue-500 mb-2 uppercase tracking-widest">3. Subtract Tens</span>
+                    <span class="text-xl font-bold text-blue-500 mb-2 uppercase tracking-widest">${stepLabel}. Subtract Tens</span>
                     <div class="text-3xl font-black text-blue-600 mb-4">${p.s1.tens} - ${p.s2.tens}</div>
                     <div class="flex gap-4 mt-2">
                         <input id="l_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-blue-400 focus:outline-none">
@@ -891,13 +920,17 @@
                         <button onclick="checkInput('e_in', ${onesDiff})" class="bg-red-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 4) {
+          const logicString = p.isN2Zero
+            ? `(${p.s1.tens} - ${p.num2}) + ${p.s1.ones}`
+            : `(${p.s1.tens} - ${p.s2.tens}) + (${p.s1.ones} - ${p.s2.ones})`;
+
           html += `<div class="w-full p-8 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
                     <span class="text-2xl font-black text-yellow-700 mb-2 uppercase tracking-widest">Final Total</span>
                     
                     <div class="bg-white/60 px-8 py-4 rounded-[2rem] mb-6 flex flex-col items-center border-2 border-yellow-200 shadow-sm w-full max-w-md">
                         <div class="text-xl font-bold text-gray-400 mb-1">${p.num1} - ${p.num2}</div>
-                        <div class="text-lg font-bold text-yellow-600/70 mb-2">(${p.s1.tens} - ${p.s2.tens}) + (${p.s1.ones} - ${p.s2.ones})</div>
-                        <div class="text-5xl font-black text-yellow-600">${formatAdd(tensDiff, onesDiff)}</div>
+                        <div class="text-lg font-bold text-yellow-600/70 mb-2">${logicString}</div>
+                        <div class="text-5xl font-black text-yellow-600">${formatAdd(tensDiff, p.isN2Zero ? p.s1.ones : onesDiff)}</div>
                     </div>
 
                     <div class="flex gap-4">
