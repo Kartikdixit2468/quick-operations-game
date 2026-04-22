@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Math Mind: Landmark Evolution</title>
+    <title>Math Mind: Place Value Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap");
@@ -25,8 +25,9 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 0.5rem;
+        padding: 1rem;
         position: relative;
+        transition: max-width 0.4s ease;
       }
 
       #confetti-canvas {
@@ -39,54 +40,36 @@
         z-index: 100;
       }
 
-      /* Header Layout */
-      .game-header {
-        position: absolute;
-        top: 1.5rem;
-        left: 0;
-        right: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 2rem;
-        z-index: 50;
+      /* 3-Column Layout Animations */
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
-      .header-group {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
+      .slide-left {
+        animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      .slide-right {
+        animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
       }
 
-      .header-btn {
-        padding: 0.85rem 1.75rem;
-        border-radius: 2rem;
-        font-weight: 800;
-        font-size: 1.4rem;
-        box-shadow: 0 6px 12px -2px rgb(0 0 0 / 0.15);
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .quit-btn {
-        background: white;
-        color: #9ca3af;
-        border: 3px solid #f3f4f6;
-      }
-      .help-btn {
-        background: #60a5fa;
-        color: white;
-        border-bottom: 5px solid #2563eb;
-      }
-      .score-box {
-        background: #fbbf24;
-        color: white;
-        border-bottom: 5px solid #d97706;
-      }
-
-      /* Full Tree Visualizer */
+      /* Full Tree Visualizer (For Learn Mode) */
       .tree-viewport {
         position: relative;
         width: 100%;
@@ -141,7 +124,7 @@
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
       }
       .node-level-4 {
-        font-size: 3.5rem;
+        font-size: 4rem;
         color: #10b981;
         top: 315px;
         text-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
@@ -176,7 +159,6 @@
       .fade-slide-in {
         animation: fadeSlideIn 0.5s both;
       }
-
       @keyframes fadeSlideIn {
         from {
           opacity: 0;
@@ -242,7 +224,8 @@
         animation: vibrate 0.3s linear;
       }
       @keyframes vibrate {
-        0% {
+        0%,
+        100% {
           transform: translateX(0);
         }
         25% {
@@ -251,46 +234,44 @@
         75% {
           transform: translateX(8px);
         }
-        100% {
-          transform: translateX(0);
-        }
       }
 
-      /* Practice History */
+      /* Practice History Stack */
       .sum-stack {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
-        min-height: 100px;
+        min-height: 120px;
         justify-content: flex-end;
-        margin-bottom: 0.15rem;
+        margin-bottom: 0.25rem;
         transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       .history-item {
         transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        font-weight: 700;
-        color: #9ca3af;
-        font-size: 1rem;
+        font-weight: 800;
+        color: #8b5cf6;
+        font-size: 1.15rem;
         opacity: 0;
         transform: translateY(15px) scale(0.8);
         margin-bottom: 4px;
       }
 
       .history-item.show {
-        opacity: 0.5;
-        transform: translateY(0) scale(0.9);
+        opacity: 0.85;
+        transform: translateY(0) scale(1);
       }
+
       .finished .sum-stack {
         justify-content: center;
-        min-height: 280px;
+        min-height: 320px;
         margin-top: 1rem;
       }
       .finished .history-item {
         opacity: 1 !important;
         color: #10b981 !important;
-        font-size: 1.8rem !important;
+        font-size: 1.6rem !important;
         transform: scale(1.15) !important;
         margin-bottom: 12px;
       }
@@ -347,17 +328,21 @@
         <h2 class="text-4xl font-black text-blue-600 mb-4">How to Play</h2>
         <div class="space-y-4 text-xl text-gray-600 font-medium">
           <p>
-            1️⃣ Use
-            <span class="text-purple-600 font-bold">Landmarks</span> (ending in
-            0 or 5).
+            1️⃣ Break numbers into
+            <span class="text-blue-500 font-bold">Tens</span> and
+            <span class="text-red-500 font-bold">Ones</span>.
           </p>
           <p>
-            2️⃣ Round <span class="text-green-600 font-bold">UP</span> if the
-            last digit is <span class="underline">6, 7, 8, or 9</span>.
+            2️⃣ Subtract the
+            <span class="text-blue-500 font-bold">Tens</span> together.
           </p>
           <p>
-            3️⃣ Solve the
-            <span class="text-blue-500 font-bold">Big Parts</span> first!
+            3️⃣ Subtract the
+            <span class="text-red-500 font-bold">Ones</span> together.
+          </p>
+          <p>
+            4️⃣ <span class="text-green-500 font-bold">Add</span> those two
+            results to get the Final Total!
           </p>
         </div>
         <button
@@ -370,7 +355,6 @@
     </div>
 
     <canvas id="confetti-canvas"></canvas>
-
     <div id="app" class="game-container max-w-2xl mx-auto w-full"></div>
 
     <script>
@@ -387,23 +371,20 @@
 
       const icons = {
         brain: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.105 4 4 0 0 0 5.327 2.022A3 3 0 1 0 12 18"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.52 8.105 4 4 0 0 1-5.327 2.022A3 3 0 1 1 12 18"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.5 9.912a2.5 2.5 0 0 0-5-1.912"/><path d="M6.5 9.912a2.5 2.5 0 0 1 5-1.912"/><path d="M12 18v-5"/></svg>`,
-        star: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" class="text-white"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-        help: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+        star: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" class="text-white"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+        help: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
       };
 
-      const resolveDisplay = (v1, v2) =>
+      // FORMATTERS
+      const formatSub = (v1, v2) =>
         v2 < 0 ? `${v1} + ${Math.abs(v2)}` : `${v1} - ${v2}`;
+      const formatAdd = (v1, v2) =>
+        v2 < 0 ? `${v1} - ${Math.abs(v2)}` : `${v1} + ${v2}`;
 
-      function getTeacherSplit(n) {
-        const ones = n % 10,
-          tens = Math.floor(n / 10) * 10;
-        if (ones > 5)
-          return {
-            landmark: tens + 10,
-            extra: -(10 - ones),
-            display: `${tens + 10} - ${10 - ones}`,
-          };
-        return { landmark: tens, extra: ones, display: `${tens} + ${ones}` };
+      function getSplit(n) {
+        const ones = n % 10;
+        const tens = Math.floor(n / 10) * 10;
+        return { tens: tens, ones: ones, display: `${tens} + ${ones}` };
       }
 
       function toggleHelp(show) {
@@ -413,25 +394,33 @@
       }
 
       function generateProblem() {
-        let n1 = Math.floor(Math.random() * 60) + 30,
-          n2 = Math.floor(Math.random() * (n1 - 15)) + 11;
-        const s1 = getTeacherSplit(n1),
-          s2 = getTeacherSplit(n2);
-        if (s1.extra < s2.extra && s1.extra >= 0 && s2.extra >= 0)
-          n1 += s2.extra - s1.extra;
+        let n1, n2;
+        while (true) {
+          n1 = Math.floor(Math.random() * 60) + 30; // 30 to 89
+          n2 = Math.floor(Math.random() * (n1 - 15)) + 11; // 11 to n1-15
+          const o1 = n1 % 10;
+          const o2 = n2 % 10;
+
+          // Rules: No zeros, and o1 >= o2 to keep subtraction straightforward
+          if (o1 !== 0 && o2 !== 0 && o1 >= o2) {
+            break;
+          }
+        }
+
         state.currentProblem = {
           num1: n1,
           num2: n2,
-          s1: getTeacherSplit(n1),
-          s2: getTeacherSplit(n2),
-          opts1: generateGenuineOptions(n1),
-          opts2: generateGenuineOptions(n2),
+          s1: getSplit(n1),
+          s2: getSplit(n2),
+          opts1: generateOptions(n1),
+          opts2: generateOptions(n2),
         };
         state.step = 0;
         state.view = "practice";
         state.history = [];
         state.wrongChoices.clear();
         renderShell();
+        triggerEvolution(`${n1} - ${n2}`); // Initialize the starting sum
       }
 
       function startLearn() {
@@ -440,54 +429,88 @@
         state.currentProblem = {
           num1: n1,
           num2: n2,
-          s1: getTeacherSplit(n1),
-          s2: getTeacherSplit(n2),
+          s1: getSplit(n1),
+          s2: getSplit(n2),
         };
         state.step = 0;
         state.view = "learn";
         state.history = [];
         renderShell();
+        triggerEvolution(`${n1} - ${n2}`);
       }
 
       function nextLearnStep() {
         if (state.isProcessing) return;
         state.isProcessing = true;
+
+        let hLabel = "";
+        if (state.step === 0) hLabel = "Step 1: 87 = 80 + 7";
+        else if (state.step === 1) hLabel = "Step 2: 26 = 20 + 6";
+        else if (state.step === 2) hLabel = "Step 3: Tens ➔ 80 - 20 = 60";
+        else if (state.step === 3) hLabel = "Step 4: Ones ➔ 7 - 6 = 1";
+        else if (state.step === 4) hLabel = "Final: 87 - 26 = 61";
+
+        if (hLabel) {
+          state.history.push(hLabel);
+          updateHistoryStack();
+        }
+
+        let nextSum = "";
+        if (state.step === 0) nextSum = `(80 + 7) - 26`;
+        else if (state.step === 1) nextSum = `(80 + 7) - (20 + 6)`;
+        else if (state.step === 2) nextSum = `60 + (7 - 6)`;
+        else if (state.step === 3) nextSum = `87 - 26 = ?`;
+        else if (state.step === 4) nextSum = `87 - 26 = 61`;
+
+        if (nextSum) triggerEvolution(nextSum);
+
         setTimeout(() => {
           state.step++;
           state.isProcessing = false;
           if (state.step === 6) {
             triggerConfetti();
             state.score += 20;
+            updateScoreDisplay();
           }
           renderStepContent();
-        }, 500);
+        }, 600);
       }
 
-      function generateGenuineOptions(n) {
-        const teacher = getTeacherSplit(n),
-          tens = Math.floor(n / 10) * 10,
-          ones = n % 10;
-        let set = new Set([teacher.display]);
+      function generateOptions(n) {
+        const split = getSplit(n),
+          tens = split.tens,
+          ones = split.ones;
+        let set = new Set([split.display]);
+
         const dists = [
-          () =>
-            ones > 5 ? `${tens} + ${ones}` : `${tens + 10} - ${10 - ones}`,
-          () => `${tens + 5} ${ones > 5 ? "-" : "+"} ${Math.abs(ones - 5)}`,
           () => `${tens - 10} + ${ones + 10}`,
+          () => `${tens + 10} - ${10 - ones}`,
+          () =>
+            `${tens + 5} ${ones > 5 ? "-" : "+"} ${Math.abs(ones - 5) || 2}`,
         ];
         dists.forEach((l) => {
           let c = l();
           if (set.has(c)) c = `${tens - 20} + ${ones + 20}`;
           set.add(c);
         });
+
+        let f = 10;
+        while (set.size < 4) {
+          set.add(`${tens - f} + ${ones + f}`);
+          f += 10;
+        }
+
         return Array.from(set)
           .slice(0, 4)
-          .map((t) => ({ t, c: t === teacher.display }))
+          .map((t) => ({ t, c: t === split.display }))
           .sort(() => Math.random() - 0.5);
       }
 
       function handleOptionClick(idx, isCorrect, btnId) {
         if (state.isProcessing) return;
         const btn = document.getElementById(btnId);
+        const p = state.currentProblem;
+
         if (isCorrect) {
           state.isProcessing = true;
           btn.classList.add(
@@ -496,9 +519,25 @@
             "ring-4",
             "ring-green-100",
           );
+
+          const currentNum = state.step === 0 ? p.num1 : p.num2;
+          const currentSplit = state.step === 0 ? p.s1.display : p.s2.display;
+
+          // Clear, specific history logging
           state.history.push(
-            `Step ${state.step + 1}: ${state.currentProblem.num1} broken down`,
+            `Step ${state.step + 1}: ${currentNum} = ${currentSplit}`,
           );
+          updateHistoryStack();
+
+          // Sync Active Sum
+          let nextSum = "";
+          if (state.step === 0) {
+            nextSum = `(${p.s1.display}) - ${p.num2}`;
+          } else if (state.step === 1) {
+            nextSum = `(${p.s1.display}) - (${p.s2.display})`;
+          }
+          triggerEvolution(nextSum);
+
           setTimeout(() => {
             state.step++;
             state.isProcessing = false;
@@ -509,7 +548,7 @@
           if (!state.wrongChoices.has(btnId)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(btnId);
-            document.getElementById("score-val").innerText = state.score;
+            updateScoreDisplay();
           }
           setTimeout(
             () =>
@@ -522,19 +561,47 @@
       function checkInput(id, expected) {
         if (state.isProcessing) return;
         const input = document.getElementById(id),
-          val = parseInt(input.value);
+          val = parseInt(input.value),
+          p = state.currentProblem;
+
         if (val === expected) {
           state.isProcessing = true;
           input.classList.add("border-green-500", "bg-green-50");
-          state.history.push(
-            state.step === 2 ? "Landmarks solved" : "Adjustments solved",
-          );
+
+          let summary = "";
+          const total = p.num1 - p.num2;
+
+          // Clear, specific history logging for math steps
+          if (state.step === 2) {
+            summary = `Step 3: Tens ➔ ${p.s1.tens} - ${p.s2.tens} = ${p.s1.tens - p.s2.tens}`;
+          } else if (state.step === 3) {
+            summary = `Step 4: Ones ➔ ${p.s1.ones} - ${p.s2.ones} = ${p.s1.ones - p.s2.ones}`;
+          } else if (state.step === 4) {
+            summary = `Final: ${p.num1} - ${p.num2} = ${total}`;
+          }
+
+          if (summary) {
+            state.history.push(summary);
+            updateHistoryStack();
+          }
+
+          // Active Sum evolution - keeping the context alive!
+          let nextSum = "";
+          if (state.step === 2) {
+            nextSum = `${p.s1.tens - p.s2.tens} + (${formatSub(p.s1.ones, p.s2.ones)})`;
+          } else if (state.step === 3) {
+            nextSum = `${p.num1} - ${p.num2} = ?`; // Restore focus to the original problem before the final check
+          } else if (state.step === 4) {
+            nextSum = `${p.num1} - ${p.num2} = ${total}`;
+          }
+          if (nextSum) triggerEvolution(nextSum);
+
           setTimeout(() => {
             state.step++;
             state.isProcessing = false;
             if (state.step === 5) {
               state.score += 20;
-              document.getElementById("score-val").innerText = state.score;
+              updateScoreDisplay();
               triggerConfetti();
             }
             renderStepContent();
@@ -544,7 +611,7 @@
           if (!state.wrongChoices.has(id)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(id);
-            document.getElementById("score-val").innerText = state.score;
+            updateScoreDisplay();
           }
           setTimeout(
             () =>
@@ -554,13 +621,48 @@
         }
       }
 
+      function updateHistoryStack() {
+        const stack = document.getElementById("stack-area");
+        if (!stack) return;
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerHTML = state.history[state.history.length - 1]; // Support formatting if needed
+        stack.appendChild(item);
+        requestAnimationFrame(() => item.classList.add("show"));
+      }
+
+      function triggerEvolution(newSum) {
+        const container = document.getElementById("active-container");
+        if (!container) return;
+        const current = container.querySelector(".sum-center");
+        if (current) {
+          current.classList.replace("sum-center", "sum-up");
+          setTimeout(() => current.remove(), 600);
+        }
+        const inc = document.createElement("div");
+        inc.className = "sum-text sum-down";
+        inc.innerText = newSum;
+        container.appendChild(inc);
+        requestAnimationFrame(() =>
+          inc.classList.replace("sum-down", "sum-center"),
+        );
+        state.activeSum = newSum;
+      }
+
+      function updateScoreDisplay() {
+        const scoreVal = document.getElementById("score-val");
+        if (scoreVal) scoreVal.innerText = state.score;
+      }
+
       function renderShell() {
         const app = document.getElementById("app");
+
         if (state.view === "menu") {
+          app.className = "game-container max-w-2xl mx-auto w-full";
           app.innerHTML = `<div class="flex flex-col items-center fade-in text-center">
                     <div class="mb-4 text-orange-600 drop-shadow-lg">${icons.brain}</div>
                     <h1 class="text-7xl font-black text-orange-800 mb-2 tracking-tight">Math Mind</h1>
-                    <p class="text-3xl text-gray-400 mb-10 italic">Learn to Think in Landmarks!</p>
+                    <p class="text-3xl text-gray-400 mb-10 italic">Split & Subtract Method!</p>
                     <div class="flex flex-col gap-4 w-full max-w-sm">
                         <button onclick="startLearn()" class="p-8 bg-blue-500 border-b-8 border-blue-700 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Learn Shortcut</button>
                         <button onclick="generateProblem()" class="p-8 bg-purple-600 border-b-8 border-purple-800 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Play Game</button>
@@ -568,20 +670,36 @@
                 </div>`;
           return;
         }
+
+        app.className = "game-container max-w-[1400px] mx-auto w-full";
         app.innerHTML = `
-                <div class="game-header">
-                    <div class="header-group">
-                        <button onclick="state.view='menu'; state.score=0; renderShell()" class="header-btn quit-btn">QUIT</button>
-                        <button onclick="toggleHelp(true)" class="header-btn help-btn">${icons.help} HELP</button>
-                    </div>
-                    <div class="header-btn score-box">${icons.star} SCORE: <span id="score-val">${state.score}</span></div>
+            <div class="flex flex-row items-center justify-between w-full h-full gap-6 lg:gap-10">
+                <div class="flex flex-col justify-center w-[200px] lg:w-[240px] shrink-0 slide-left" style="animation-delay: 0.1s">
+                    <button onclick="state.view='menu'; state.score=0; renderShell()" class="bg-white text-gray-400 border-b-[8px] border-gray-200 rounded-[2.5rem] py-6 lg:py-8 px-4 shadow-xl text-2xl lg:text-3xl font-black hover:scale-105 active:scale-95 transition-all w-full mb-6 flex items-center justify-center gap-2">
+                        QUIT
+                    </button>
+                    <button onclick="toggleHelp(true)" class="bg-blue-500 text-white border-b-[8px] border-blue-700 rounded-[2.5rem] py-6 lg:py-8 px-4 shadow-xl text-2xl lg:text-3xl font-black hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 w-full">
+                        ${icons.help} HELP
+                    </button>
                 </div>
-                <div id="game-card" class="w-full bg-white rounded-[5rem] shadow-2xl p-6 relative flex-grow flex flex-col items-center border-b-[10px] border-orange-100 overflow-hidden max-h-[92vh]">
+
+                <div id="game-card" class="w-full bg-white rounded-[4rem] shadow-2xl p-6 lg:p-8 relative flex-grow flex flex-col items-center border-b-[12px] border-orange-100 overflow-hidden h-[92vh] max-h-[900px] max-w-4xl z-10">
                     <div id="stack-area" class="sum-stack ${state.view === "learn" ? "hidden" : ""}"></div>
                     <div id="active-container" class="active-container ${state.view === "learn" ? "hidden" : ""}"></div>
                     <div id="tree-area" class="w-full"></div>
                     <div id="step-area" class="step-area"></div>
-                </div>`;
+                </div>
+
+                <div class="flex flex-col justify-start h-[92vh] max-h-[900px] w-[200px] lg:w-[240px] shrink-0 pt-8 slide-right" style="animation-delay: 0.2s">
+                    <div class="flex flex-col items-center bg-yellow-400 text-white rounded-[3rem] py-10 px-4 shadow-2xl border-b-[8px] border-yellow-600 w-full mt-4">
+                        <div class="flex items-center gap-3 text-xl lg:text-2xl font-bold uppercase tracking-widest opacity-90 mb-4">
+                            ${icons.star} Score
+                        </div>
+                        <div id="score-val" class="text-7xl lg:text-8xl font-black drop-shadow-md">${state.score}</div>
+                    </div>
+                </div>
+            </div>
+        `;
         renderStepContent();
       }
 
@@ -601,10 +719,9 @@
 
       function renderLearnTree(area, p) {
         const s = state.step;
-        const lA = p.s1.landmark - p.s2.landmark,
-          eA = p.s1.extra - p.s2.extra;
+        const tensDiff = p.s1.tens - p.s2.tens;
+        const onesDiff = p.s1.ones - p.s2.ones;
 
-        // X-coordinates for organized symmetry
         const LX1 = 20,
           AX1 = 38,
           LX2 = 62,
@@ -615,30 +732,27 @@
 
         let html = `<div class="tree-viewport">
                 <svg class="tree-svg">
-                    <!-- Decomposition Roots -->
                     ${s >= 1 ? `<line x1="40%" y1="55" x2="${LX1}%" y2="115" class="root-line" /><line x1="40%" y1="55" x2="${AX1}%" y2="115" class="root-line" />` : ""}
                     ${s >= 2 ? `<line x1="60%" y1="55" x2="${LX2}%" y2="115" class="root-line" /><line x1="60%" y1="55" x2="${AX2}%" y2="115" class="root-line" />` : ""}
-                    <!-- Calculation Roots -->
                     ${s >= 3 ? `<line x1="${LX1}%" y1="140" x2="${LC}%" y2="225" class="root-line" /><line x1="${LX2}%" y1="140" x2="${LC}%" y2="225" class="root-line" />` : ""}
                     ${s >= 4 ? `<line x1="${AX1}%" y1="140" x2="${AC}%" y2="225" class="root-line" /><line x1="${AX2}%" y1="140" x2="${AC}%" y2="225" class="root-line" />` : ""}
-                    <!-- Final Converge -->
                     ${s >= 5 ? `<line x1="${LC}%" y1="265" x2="${FINAL}%" y2="315" class="root-line" /><line x1="${AC}%" y1="265" x2="${FINAL}%" y2="315" class="root-line" />` : ""}
                 </svg>`;
 
         html += `<div class="node node-level-1" style="left: 50%">${p.num1} - ${p.num2}</div>`;
 
         if (s >= 1) {
-          html += `<div class="node node-level-2" style="left: ${LX1}%; color:#3b82f6">${p.s1.landmark}</div>`;
-          html += `<div class="node node-level-2" style="left: ${AX1}%; color:#f43f5e">${p.s1.extra}</div>`;
+          html += `<div class="node node-level-2" style="left: ${LX1}%; color:#3b82f6">${p.s1.tens}</div>`;
+          html += `<div class="node node-level-2" style="left: ${AX1}%; color:#ef4444">${p.s1.ones}</div>`;
         }
         if (s >= 2) {
-          html += `<div class="node node-level-2" style="left: ${LX2}%; color:#3b82f6">${p.s2.landmark}</div>`;
-          html += `<div class="node node-level-2" style="left: ${AX2}%; color:#f43f5e">${p.s2.extra}</div>`;
+          html += `<div class="node node-level-2" style="left: ${LX2}%; color:#3b82f6">${p.s2.tens}</div>`;
+          html += `<div class="node node-level-2" style="left: ${AX2}%; color:#ef4444">${p.s2.ones}</div>`;
         }
         if (s >= 3)
-          html += `<div class="node node-level-3" style="left: ${LC}%; color: #2563eb; border: 2px solid #bfdbfe;">${lA}</div>`;
+          html += `<div class="node node-level-3" style="left: ${LC}%; color: #2563eb; border: 2px solid #bfdbfe;">${tensDiff}</div>`;
         if (s >= 4)
-          html += `<div class="node node-level-3" style="left: ${AC}%; color: #dc2626; border: 2px solid #fecaca;">${eA}</div>`;
+          html += `<div class="node node-level-3" style="left: ${AC}%; color: #dc2626; border: 2px solid #fecaca;">${onesDiff}</div>`;
         if (s >= 5)
           html += `<div class="node node-level-4" style="left: ${FINAL}%">${p.num1 - p.num2}</div>`;
 
@@ -647,11 +761,11 @@
 
       function renderLearnInstructions(area, p) {
         const steps = [
-          "Let's solve <span class='text-purple-600 font-bold'>87 - 26</span>. Watch how the hidden parts split apart!",
-          "<span class='text-purple-600 font-bold'>87</span> is close to 90. So we split it into <span class='text-blue-500'>90</span> and <span class='text-red-500'>-3</span>.",
-          "Next, <span class='text-purple-600 font-bold'>26</span> is close to 30. Split it into <span class='text-blue-500'>30</span> and <span class='text-red-500'>-4</span>.",
-          "Now we subtract the Big Landmarks: <span class='text-blue-600 font-bold'>90 - 30 = 60</span>.",
-          "Then the Small Adjustments: <span class='text-red-600 font-bold'>-3 - (-4) = 1</span>.",
+          "Let's solve <span class='text-purple-600 font-bold'>87 - 26</span>. Watch how we break them into Tens and Ones!",
+          "<span class='text-purple-600 font-bold'>87</span> is made of <span class='text-blue-500 font-bold'>80</span> and <span class='text-red-500 font-bold'>7</span>.",
+          "Next, <span class='text-purple-600 font-bold'>26</span> is made of <span class='text-blue-500 font-bold'>20</span> and <span class='text-red-500 font-bold'>6</span>.",
+          "First, subtract the Tens: <span class='text-blue-600 font-bold'>80 - 20 = 60</span>.",
+          "Next, subtract the Ones: <span class='text-red-600 font-bold'>7 - 6 = 1</span>.",
           "Finally, join the results: <span class='text-green-600 font-bold'>60 + 1 = 61</span>. You did it!",
           "",
         ];
@@ -663,20 +777,26 @@
                 </div>`;
         } else {
           area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in">
-                    <div class="congrats-text text-green-500">SHORTCUT MASTERED!</div>
-                    <button onclick="state.view='menu'; renderShell()" class="w-full py-7 bg-blue-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-8 hover:scale-105 active:scale-95 transition-all">MAIN MENU</button>
+                    <div class="text-3xl font-black text-green-500 mb-6 text-center uppercase tracking-widest">Shortcut Mastered!</div>
+                    <button onclick="state.view='menu'; renderShell()" class="w-full py-7 bg-blue-500 text-white rounded-[2.5rem] font-black text-3xl shadow-xl mt-4 hover:scale-105 active:scale-95 transition-all">MAIN MENU</button>
                 </div>`;
         }
       }
 
       function renderPracticeGame(area, tree, p) {
-        tree.innerHTML = ""; // Hide tree in practice
+        tree.innerHTML = "";
         const stack = state.history
           .map((txt) => `<div class="history-item show">${txt}</div>`)
           .join("");
         document.getElementById("stack-area").innerHTML = stack;
-        document.getElementById("active-container").innerHTML =
-          `<div class="sum-text sum-center">${state.activeSum || p.num1 + " - " + p.num2}</div>`;
+
+        const textContainer = document.getElementById("active-container");
+        if (state.step === 0 && !state.activeSum) {
+          textContainer.innerHTML = `<div class="sum-text sum-center">${p.num1} - ${p.num2}</div>`;
+          state.activeSum = `${p.num1} - ${p.num2}`;
+        } else if (state.step !== 0) {
+          textContainer.innerHTML = `<div class="sum-text sum-center">${state.activeSum}</div>`;
+        }
 
         if (state.step === 0) area.innerHTML = renderDecomp(p.num1, p.opts1);
         else if (state.step === 1)
@@ -684,10 +804,9 @@
         else if (state.step < 5) area.innerHTML = renderSolve(p);
         else {
           document.getElementById("game-card").classList.add("finished");
-          area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in">
-                    <div class="congrats-text">CONGRATULATIONS!</div>
-                    <div class="step-math-highlight text-5xl font-black text-purple-600 mt-2">RESULT: ${p.num1 - p.num2}</div>
-                    <button onclick="generateProblem()" class="w-full py-7 bg-green-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-10 hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
+          area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in mt-4">
+                    <div class="text-3xl font-black text-purple-500 tracking-widest uppercase mb-6 drop-shadow-sm">Mission Accomplished!</div>
+                    <button onclick="generateProblem()" class="w-full py-7 bg-green-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
                 </div>`;
         }
       }
@@ -702,30 +821,38 @@
       }
 
       function renderSolve(p) {
-        const lA = p.s1.landmark - p.s2.landmark,
-          eA = p.s1.extra - p.s2.extra,
-          total = p.num1 - p.num2;
+        const tensDiff = p.s1.tens - p.s2.tens;
+        const onesDiff = p.s1.ones - p.s2.ones;
+        const total = p.num1 - p.num2;
+
         let html = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
         if (state.step === 2) {
           html += `<div class="w-full p-6 bg-blue-50 rounded-[3rem] border-2 border-blue-100 flex flex-col items-center fade-in">
-                    <span class="step-label text-blue-500">3. Subtract Landmarks</span>
-                    <div class="step-math-highlight text-blue-600">${p.s1.landmark} - ${p.s2.landmark}</div>
+                    <span class="text-xl font-bold text-blue-500 mb-2 uppercase tracking-widest">3. Subtract Tens</span>
+                    <div class="text-3xl font-black text-blue-600 mb-4">${p.s1.tens} - ${p.s2.tens}</div>
                     <div class="flex gap-4 mt-2">
                         <input id="l_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-blue-400 focus:outline-none">
-                        <button onclick="checkInput('l_in', ${lA})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
+                        <button onclick="checkInput('l_in', ${tensDiff})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 3) {
-          html += `<div class="w-full p-6 bg-green-50 rounded-[3rem] border-2 border-green-100 flex flex-col items-center fade-in">
-                    <span class="step-label text-green-500">4. Adjustments</span>
-                    <div class="step-math-highlight text-green-600">${resolveDisplay(p.s1.extra, p.s2.extra)}</div>
+          html += `<div class="w-full p-6 bg-red-50 rounded-[3rem] border-2 border-red-100 flex flex-col items-center fade-in">
+                    <span class="text-xl font-bold text-red-500 mb-2 uppercase tracking-widest">4. Subtract Ones</span>
+                    <div class="text-3xl font-black text-red-600 mb-4">${p.s1.ones} - ${p.s2.ones}</div>
                     <div class="flex gap-4 mt-2">
-                        <input id="e_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-green-400 focus:outline-none">
-                        <button onclick="checkInput('e_in', ${eA})" class="bg-green-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
+                        <input id="e_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-red-400 focus:outline-none">
+                        <button onclick="checkInput('e_in', ${onesDiff})" class="bg-red-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 4) {
+          // Dedicated logic box to show EXACTLY how the final numbers connect to the original equation
           html += `<div class="w-full p-8 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
-                    <span class="step-label text-yellow-700">Final Total</span>
-                    <div class="text-5xl font-black text-yellow-600 mb-4">${resolveDisplay(lA, eA)}</div>
+                    <span class="text-2xl font-black text-yellow-700 mb-2 uppercase tracking-widest">Final Total</span>
+                    
+                    <div class="bg-white/60 px-8 py-4 rounded-[2rem] mb-6 flex flex-col items-center border-2 border-yellow-200 shadow-sm w-full max-w-md">
+                        <div class="text-xl font-bold text-gray-400 mb-1">${p.num1} - ${p.num2}</div>
+                        <div class="text-lg font-bold text-yellow-600/70 mb-2">(${p.s1.tens} - ${p.s2.tens}) + (${p.s1.ones} - ${p.s2.ones})</div>
+                        <div class="text-5xl font-black text-yellow-600">${formatAdd(tensDiff, onesDiff)}</div>
+                    </div>
+
                     <div class="flex gap-4">
                         <input id="f_in" type="number" autofocus placeholder="?" class="w-48 text-center text-6xl font-black bg-white rounded-[2rem] p-4 border-4 border-yellow-500 focus:outline-none">
                         <button onclick="checkInput('f_in', ${total})" class="bg-yellow-500 text-white px-12 py-6 rounded-[2rem] font-black text-3xl shadow-xl active:scale-95 transition-all">CHECK</button>
