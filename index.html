@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Math Mind: Landmark Edition</title>
+    <title>Math Mind: Landmark Evolution</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap");
@@ -39,7 +39,7 @@
         z-index: 100;
       }
 
-      /* Large Header Layout */
+      /* Header Layout */
       .game-header {
         position: absolute;
         top: 1.5rem;
@@ -86,36 +86,177 @@
         border-bottom: 5px solid #d97706;
       }
 
-      .header-btn:active {
-        transform: translateY(2px);
-        border-bottom-width: 2px;
+      /* Full Tree Visualizer */
+      .tree-viewport {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
-      /* Help Modal */
-      #help-modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(4px);
-        z-index: 200;
-        display: none;
+      .tree-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .node {
+        position: absolute;
+        font-weight: 900;
+        white-space: nowrap;
+        text-align: center;
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform: translateX(-50%);
+        display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem;
       }
 
-      .modal-content {
+      .node-level-1 {
+        font-size: 3rem;
+        color: #374151;
+        top: 10px;
+      }
+      .node-level-2 {
+        font-size: 2rem;
+        top: 115px;
+        padding: 0.25rem 1rem;
+        border-radius: 1rem;
         background: white;
-        padding: 2.5rem;
-        border-radius: 3rem;
-        max-width: 500px;
-        width: 100%;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        text-align: center;
-        animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border: 2px solid #f3f4f6;
+      }
+      .node-level-3 {
+        font-size: 1.8rem;
+        top: 225px;
+        padding: 0.5rem 1.25rem;
+        border-radius: 1.5rem;
+        background: white;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+      }
+      .node-level-4 {
+        font-size: 3.5rem;
+        color: #10b981;
+        top: 315px;
+        text-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
       }
 
-      /* Stacked History */
+      .root-line {
+        stroke: #d1d5db;
+        stroke-width: 3;
+        stroke-linecap: round;
+        fill: none;
+        stroke-dasharray: 400;
+        stroke-dashoffset: 400;
+        animation: growRoot 0.8s forwards ease-out;
+        opacity: 0.6;
+      }
+
+      @keyframes growRoot {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* Step Area Animations */
+      .step-area {
+        width: 100%;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .fade-slide-in {
+        animation: fadeSlideIn 0.5s both;
+      }
+
+      @keyframes fadeSlideIn {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .next-btn {
+        background: #10b981;
+        color: white;
+        border-bottom: 6px solid #059669;
+        padding: 1rem 3.5rem;
+        font-size: 2.2rem;
+        font-weight: 900;
+        border-radius: 2rem;
+        transition: all 0.2s;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      }
+      .next-btn:active {
+        transform: translateY(3px);
+        border-bottom-width: 3px;
+      }
+
+      /* Shared Components */
+      .focus-zone {
+        background: radial-gradient(
+          circle,
+          rgba(216, 180, 254, 0.2) 0%,
+          rgba(255, 255, 255, 0) 70%
+        );
+        padding: 0.75rem;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: focus-pulse 2s infinite ease-in-out;
+      }
+      @keyframes focus-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      .target-num {
+        font-size: 5rem;
+        font-weight: 900;
+        color: #9333ea;
+        text-shadow: 0 4px 15px rgba(147, 51, 234, 0.25);
+      }
+      .option-btn {
+        transition: all 0.2s;
+        box-shadow: 0 4px 0 rgba(147, 51, 234, 0.1);
+      }
+      .vibrate {
+        animation: vibrate 0.3s linear;
+      }
+      @keyframes vibrate {
+        0% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      /* Practice History */
       .sum-stack {
         display: flex;
         flex-direction: column;
@@ -123,12 +264,12 @@
         width: 100%;
         min-height: 100px;
         justify-content: flex-end;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.15rem;
         transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       .history-item {
-        transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         font-weight: 700;
         color: #9ca3af;
         font-size: 1rem;
@@ -141,14 +282,11 @@
         opacity: 0.5;
         transform: translateY(0) scale(0.9);
       }
-
-      /* Final Glide & Grow Animation */
       .finished .sum-stack {
         justify-content: center;
-        min-height: 260px;
+        min-height: 280px;
         margin-top: 1rem;
       }
-
       .finished .history-item {
         opacity: 1 !important;
         color: #10b981 !important;
@@ -168,7 +306,6 @@
         margin-bottom: 0.5rem;
         transition: opacity 0.4s ease;
       }
-
       .finished .active-container {
         opacity: 0;
         height: 0;
@@ -182,7 +319,6 @@
         font-size: 2.5rem;
         white-space: nowrap;
       }
-
       .sum-up {
         transform: translateY(-50px) scale(0.4);
         opacity: 0;
@@ -196,165 +332,22 @@
         transform: translateY(40px) scale(0.8);
         opacity: 0;
       }
-
-      .focus-zone {
-        background: radial-gradient(
-          circle,
-          rgba(216, 180, 254, 0.2) 0%,
-          rgba(255, 255, 255, 0) 70%
-        );
-        padding: 0.75rem;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        animation: focus-pulse 2s infinite ease-in-out;
-      }
-
-      @keyframes focus-pulse {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 0.9;
-        }
-        50% {
-          transform: scale(1.08);
-          opacity: 1;
-        }
-      }
-
-      .target-num {
-        font-size: 5rem;
-        line-height: 1;
-        font-weight: 900;
-        color: #9333ea;
-        text-shadow: 0 4px 15px rgba(147, 51, 234, 0.25);
-      }
-
-      .step-area {
-        width: 100%;
-        min-height: 220px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-      }
-
-      .vibrate {
-        animation: vibrate 0.3s linear;
-      }
-      @keyframes vibrate {
-        0% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(-8px) rotate(-1deg);
-        }
-        75% {
-          transform: translateX(8px) rotate(1deg);
-        }
-        100% {
-          transform: translateX(0);
-        }
-      }
-
-      .fade-in {
-        animation: fadeIn 0.4s ease-out;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: scale(0.95);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
-      .option-btn {
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 0 rgba(147, 51, 234, 0.1);
-      }
-
-      .option-btn:active {
-        transform: translateY(2px);
-        box-shadow: 0 2px 0 rgba(147, 51, 234, 0.1);
-      }
-
-      .congrats-text {
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #9333ea;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-top: 1rem;
-        animation: popBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      @keyframes popBounce {
-        0% {
-          transform: scale(0);
-          opacity: 0;
-        }
-        70% {
-          transform: scale(1.2);
-        }
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      .step-label {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .step-math-highlight {
-        font-size: 2.8rem;
-        font-weight: 900;
-        margin: 0.5rem 0;
-        line-height: 1;
-      }
-
-      .learn-instruction {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #4b5563;
-        text-align: center;
-        max-width: 90%;
-        margin: 1rem 0;
-        line-height: 1.4;
-      }
-
-      .next-btn {
-        background: #10b981;
-        color: white;
-        border-bottom: 6px solid #059669;
-        padding: 1rem 3rem;
-        font-size: 2rem;
-        font-weight: 900;
-        border-radius: 2rem;
-        transition: all 0.2s;
-        box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
-      }
-      .next-btn:active {
-        transform: translateY(3px);
-        border-bottom-width: 3px;
-      }
     </style>
   </head>
   <body class="bg-orange-50">
-    <div id="help-modal" onclick="toggleHelp(false)">
-      <div class="modal-content" onclick="event.stopPropagation()">
+    <div
+      id="help-modal"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-6"
+      onclick="toggleHelp(false)"
+    >
+      <div
+        class="bg-white p-10 rounded-[3rem] max-w-lg w-full text-center shadow-2xl"
+        onclick="event.stopPropagation()"
+      >
         <h2 class="text-4xl font-black text-blue-600 mb-4">How to Play</h2>
-        <div class="space-y-4 text-lg text-gray-600 font-medium">
+        <div class="space-y-4 text-xl text-gray-600 font-medium">
           <p>
-            1️⃣ Break numbers into
+            1️⃣ Use
             <span class="text-purple-600 font-bold">Landmarks</span> (ending in
             0 or 5).
           </p>
@@ -362,8 +355,10 @@
             2️⃣ Round <span class="text-green-600 font-bold">UP</span> if the
             last digit is <span class="underline">6, 7, 8, or 9</span>.
           </p>
-          <p>3️⃣ Subtract the landmarks first!</p>
-          <p>4️⃣ Add or subtract the leftover parts to get the total!</p>
+          <p>
+            3️⃣ Solve the
+            <span class="text-blue-500 font-bold">Big Parts</span> first!
+          </p>
         </div>
         <button
           onclick="toggleHelp(false)"
@@ -392,16 +387,16 @@
 
       const icons = {
         brain: `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.105 4 4 0 0 0 5.327 2.022A3 3 0 1 0 12 18"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.52 8.105 4 4 0 0 1-5.327 2.022A3 3 0 1 1 12 18"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.5 9.912a2.5 2.5 0 0 0-5-1.912"/><path d="M6.5 9.912a2.5 2.5 0 0 1 5-1.912"/><path d="M12 18v-5"/></svg>`,
-        star: `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" class="text-white"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-        help: `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+        star: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" class="text-white"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+        help: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
       };
 
-      const resolveDisplay = (v1, v2, sym = "-") =>
-        v2 < 0 ? `${v1} - ${Math.abs(v2)}` : `${v1} ${sym} ${v2}`;
+      const resolveDisplay = (v1, v2) =>
+        v2 < 0 ? `${v1} + ${Math.abs(v2)}` : `${v1} - ${v2}`;
 
       function getTeacherSplit(n) {
-        const ones = n % 10;
-        const tens = Math.floor(n / 10) * 10;
+        const ones = n % 10,
+          tens = Math.floor(n / 10) * 10;
         if (ones > 5)
           return {
             landmark: tens + 10,
@@ -411,24 +406,6 @@
         return { landmark: tens, extra: ones, display: `${tens} + ${ones}` };
       }
 
-      function triggerEvolution(newSum) {
-        const container = document.getElementById("active-container");
-        if (!container) return;
-        const current = container.querySelector(".sum-center");
-        if (current) {
-          current.classList.replace("sum-center", "sum-up");
-          setTimeout(() => current.remove(), 600);
-        }
-        const inc = document.createElement("div");
-        inc.className = "sum-text sum-down";
-        inc.innerText = newSum;
-        container.appendChild(inc);
-        requestAnimationFrame(() =>
-          inc.classList.replace("sum-down", "sum-center"),
-        );
-        state.activeSum = newSum;
-      }
-
       function toggleHelp(show) {
         document.getElementById("help-modal").style.display = show
           ? "flex"
@@ -436,8 +413,8 @@
       }
 
       function generateProblem() {
-        let n1 = Math.floor(Math.random() * 60) + 30;
-        let n2 = Math.floor(Math.random() * (n1 - 15)) + 11;
+        let n1 = Math.floor(Math.random() * 60) + 30,
+          n2 = Math.floor(Math.random() * (n1 - 15)) + 11;
         const s1 = getTeacherSplit(n1),
           s2 = getTeacherSplit(n2);
         if (s1.extra < s2.extra && s1.extra >= 0 && s2.extra >= 0)
@@ -455,7 +432,6 @@
         state.history = [];
         state.wrongChoices.clear();
         renderShell();
-        triggerEvolution(`${n1} - ${n2}`);
       }
 
       function startLearn() {
@@ -471,47 +447,32 @@
         state.view = "learn";
         state.history = [];
         renderShell();
-        triggerEvolution(`${n1} - ${n2}`);
       }
 
       function nextLearnStep() {
         if (state.isProcessing) return;
         state.isProcessing = true;
-        const p = state.currentProblem;
-
-        state.history.push(
-          `${state.step < 2 ? "Step " + (state.step + 1) : "Math"}: ${state.activeSum}`,
-        );
-        updateHistoryStack();
-
-        let nextSum = "";
-        if (state.step === 0) nextSum = `(90 - 3) - 26`;
-        else if (state.step === 1) nextSum = `(90 - 3) - (20 + 6)`;
-        else if (state.step === 2) nextSum = `(90 - 20) + (-3 - 6)`;
-        else if (state.step === 3) nextSum = `70 - 9`;
-        else if (state.step === 4) nextSum = `61`;
-
-        if (nextSum) triggerEvolution(nextSum);
-
         setTimeout(() => {
           state.step++;
           state.isProcessing = false;
-          if (state.step === 6) triggerConfetti();
+          if (state.step === 6) {
+            triggerConfetti();
+            state.score += 20;
+          }
           renderStepContent();
-        }, 700);
+        }, 500);
       }
 
       function generateGenuineOptions(n) {
-        const teacher = getTeacherSplit(n);
-        const tens = Math.floor(n / 10) * 10;
-        const ones = n % 10;
+        const teacher = getTeacherSplit(n),
+          tens = Math.floor(n / 10) * 10,
+          ones = n % 10;
         let set = new Set([teacher.display]);
         const dists = [
           () =>
             ones > 5 ? `${tens} + ${ones}` : `${tens + 10} - ${10 - ones}`,
           () => `${tens + 5} ${ones > 5 ? "-" : "+"} ${Math.abs(ones - 5)}`,
           () => `${tens - 10} + ${ones + 10}`,
-          () => `${tens + 20} - ${20 - ones}`,
         ];
         dists.forEach((l) => {
           let c = l();
@@ -535,25 +496,20 @@
             "ring-4",
             "ring-green-100",
           );
-          state.history.push(`Step ${state.step + 1}: ${state.activeSum}`);
-          updateHistoryStack();
-          triggerEvolution(
-            state.step === 0
-              ? `(${state.currentProblem.s1.display}) - ${state.currentProblem.num2}`
-              : `(${state.currentProblem.s1.display}) - (${state.currentProblem.s2.display})`,
+          state.history.push(
+            `Step ${state.step + 1}: ${state.currentProblem.num1} broken down`,
           );
           setTimeout(() => {
             state.step++;
             state.isProcessing = false;
-            state.wrongChoices.clear();
             renderStepContent();
           }, 800);
         } else {
-          btn.classList.add("border-red-500", "bg-red-50", "vibrate");
+          btn.classList.add("vibrate", "border-red-500", "bg-red-50");
           if (!state.wrongChoices.has(btnId)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(btnId);
-            updateScoreDisplay();
+            document.getElementById("score-val").innerText = state.score;
           }
           setTimeout(
             () =>
@@ -565,30 +521,20 @@
 
       function checkInput(id, expected) {
         if (state.isProcessing) return;
-        const input = document.getElementById(id);
-        const val = parseInt(input.value);
-        const p = state.currentProblem;
+        const input = document.getElementById(id),
+          val = parseInt(input.value);
         if (val === expected) {
           state.isProcessing = true;
           input.classList.add("border-green-500", "bg-green-50");
-          let summary =
-            state.step === 2
-              ? `Step 3: ${p.s1.landmark} - ${p.s2.landmark} = ${p.s1.landmark - p.s2.landmark}`
-              : `Step 4: ${resolveDisplay(p.s1.extra, p.s2.extra)} = ${p.s1.extra - p.s2.extra}`;
-          state.history.push(summary);
-          updateHistoryStack();
-          triggerEvolution(
-            state.step === 2
-              ? `${p.s1.landmark - p.s2.landmark} + (${resolveDisplay(p.s1.extra, p.s2.extra)})`
-              : `${p.num1 - p.num2}`,
+          state.history.push(
+            state.step === 2 ? "Landmarks solved" : "Adjustments solved",
           );
           setTimeout(() => {
             state.step++;
             state.isProcessing = false;
-            state.wrongChoices.clear();
             if (state.step === 5) {
               state.score += 20;
-              updateScoreDisplay();
+              document.getElementById("score-val").innerText = state.score;
               triggerConfetti();
             }
             renderStepContent();
@@ -598,7 +544,7 @@
           if (!state.wrongChoices.has(id)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(id);
-            updateScoreDisplay();
+            document.getElementById("score-val").innerText = state.score;
           }
           setTimeout(
             () =>
@@ -608,31 +554,16 @@
         }
       }
 
-      function updateHistoryStack() {
-        const stack = document.getElementById("stack-area");
-        if (!stack) return;
-        const item = document.createElement("div");
-        item.className = "history-item";
-        item.innerText = state.history[state.history.length - 1];
-        stack.appendChild(item);
-        requestAnimationFrame(() => item.classList.add("show"));
-      }
-
-      function updateScoreDisplay() {
-        const scoreEl = document.getElementById("score-val");
-        if (scoreEl) scoreEl.innerText = state.score;
-      }
-
       function renderShell() {
         const app = document.getElementById("app");
         if (state.view === "menu") {
-          app.innerHTML = `<div class="flex flex-col items-center fade-in text-center px-6">
-                    <div class="mb-6 text-orange-600 drop-shadow-lg">${icons.brain}</div>
+          app.innerHTML = `<div class="flex flex-col items-center fade-in text-center">
+                    <div class="mb-4 text-orange-600 drop-shadow-lg">${icons.brain}</div>
                     <h1 class="text-7xl font-black text-orange-800 mb-2 tracking-tight">Math Mind</h1>
-                    <p class="text-3xl text-gray-400 mb-12 italic">Master Mental Shortcuts!</p>
-                    <div class="flex flex-col gap-4 w-full max-w-md">
-                        <button onclick="startLearn()" class="p-8 bg-blue-500 border-b-8 border-blue-700 rounded-[3rem] text-4xl font-bold text-white shadow-2xl active:scale-95 transition-all">LEARN SHORTCUT</button>
-                        <button onclick="generateProblem()" class="p-8 bg-purple-600 border-b-8 border-purple-800 rounded-[3rem] text-4xl font-bold text-white shadow-2xl active:scale-95 transition-all">PRACTICE NOW</button>
+                    <p class="text-3xl text-gray-400 mb-10 italic">Learn to Think in Landmarks!</p>
+                    <div class="flex flex-col gap-4 w-full max-w-sm">
+                        <button onclick="startLearn()" class="p-8 bg-blue-500 border-b-8 border-blue-700 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Learn Shortcut</button>
+                        <button onclick="generateProblem()" class="p-8 bg-purple-600 border-b-8 border-purple-800 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Play Game</button>
                     </div>
                 </div>`;
           return;
@@ -643,11 +574,12 @@
                         <button onclick="state.view='menu'; state.score=0; renderShell()" class="header-btn quit-btn">QUIT</button>
                         <button onclick="toggleHelp(true)" class="header-btn help-btn">${icons.help} HELP</button>
                     </div>
-                    <div class="header-btn score-box">${icons.star} SCORE: <span id="score-val" class="ml-2">${state.score}</span></div>
+                    <div class="header-btn score-box">${icons.star} SCORE: <span id="score-val">${state.score}</span></div>
                 </div>
-                <div id="game-card" class="w-full bg-white rounded-[5rem] shadow-2xl p-8 relative flex-grow flex flex-col items-center border-b-[10px] border-orange-100 overflow-hidden max-h-[90vh]">
-                    <div id="stack-area" class="sum-stack"></div>
-                    <div id="active-container" class="active-container"></div>
+                <div id="game-card" class="w-full bg-white rounded-[5rem] shadow-2xl p-6 relative flex-grow flex flex-col items-center border-b-[10px] border-orange-100 overflow-hidden max-h-[92vh]">
+                    <div id="stack-area" class="sum-stack ${state.view === "learn" ? "hidden" : ""}"></div>
+                    <div id="active-container" class="active-container ${state.view === "learn" ? "hidden" : ""}"></div>
+                    <div id="tree-area" class="w-full"></div>
                     <div id="step-area" class="step-area"></div>
                 </div>`;
         renderStepContent();
@@ -655,79 +587,114 @@
 
       function renderStepContent() {
         const stepArea = document.getElementById("step-area"),
-          card = document.getElementById("game-card");
-        if (!stepArea || !card) return;
+          treeArea = document.getElementById("tree-area");
+        if (!stepArea || !treeArea) return;
         const p = state.currentProblem;
 
         if (state.view === "learn") {
-          renderLearnFlow(stepArea, card, p);
+          renderLearnTree(treeArea, p);
+          renderLearnInstructions(stepArea, p);
         } else {
-          renderPracticeFlow(stepArea, card, p);
+          renderPracticeGame(stepArea, treeArea, p);
         }
       }
 
-      function renderLearnFlow(area, card, p) {
-        const learnSteps = [
-          {
-            text: "Let's solve <span class='text-purple-600 font-bold'>87 - 26</span>. We start by simplifying the numbers!",
-            btn: "NEXT",
-          },
-          {
-            text: "<span class='text-purple-600 font-bold'>87</span> ends in 7, which is close to 10. So we round it UP to <span class='text-blue-600 font-bold'>90 - 3</span>.",
-            btn: "NEXT",
-          },
-          {
-            text: "<span class='text-purple-600 font-bold'>26</span> also ends in 6. Round it UP to <span class='text-blue-600 font-bold'>30 - 4</span>.",
-            btn: "NEXT",
-          },
-          {
-            text: "Now subtract the big landmarks: <span class='text-green-600 font-bold'>90 - 30 = 60</span>.",
-            btn: "NEXT",
-          },
-          {
-            text: "Next, combine the small parts: <span class='text-green-600 font-bold'>-3 - (-4) = 1</span>.",
-            btn: "NEXT",
-          },
-          {
-            text: "Add them back: <span class='text-purple-600 font-bold'>60 + 1 = 61</span>. You found the shortcut!",
-            btn: "FINISH",
-          },
+      function renderLearnTree(area, p) {
+        const s = state.step;
+        const lA = p.s1.landmark - p.s2.landmark,
+          eA = p.s1.extra - p.s2.extra;
+
+        // X-coordinates for organized symmetry
+        const LX1 = 20,
+          AX1 = 38,
+          LX2 = 62,
+          AX2 = 80;
+        const LC = 42,
+          AC = 58,
+          FINAL = 50;
+
+        let html = `<div class="tree-viewport">
+                <svg class="tree-svg">
+                    <!-- Decomposition Roots -->
+                    ${s >= 1 ? `<line x1="40%" y1="55" x2="${LX1}%" y2="115" class="root-line" /><line x1="40%" y1="55" x2="${AX1}%" y2="115" class="root-line" />` : ""}
+                    ${s >= 2 ? `<line x1="60%" y1="55" x2="${LX2}%" y2="115" class="root-line" /><line x1="60%" y1="55" x2="${AX2}%" y2="115" class="root-line" />` : ""}
+                    <!-- Calculation Roots -->
+                    ${s >= 3 ? `<line x1="${LX1}%" y1="140" x2="${LC}%" y2="225" class="root-line" /><line x1="${LX2}%" y1="140" x2="${LC}%" y2="225" class="root-line" />` : ""}
+                    ${s >= 4 ? `<line x1="${AX1}%" y1="140" x2="${AC}%" y2="225" class="root-line" /><line x1="${AX2}%" y1="140" x2="${AC}%" y2="225" class="root-line" />` : ""}
+                    <!-- Final Converge -->
+                    ${s >= 5 ? `<line x1="${LC}%" y1="265" x2="${FINAL}%" y2="315" class="root-line" /><line x1="${AC}%" y1="265" x2="${FINAL}%" y2="315" class="root-line" />` : ""}
+                </svg>`;
+
+        html += `<div class="node node-level-1" style="left: 50%">${p.num1} - ${p.num2}</div>`;
+
+        if (s >= 1) {
+          html += `<div class="node node-level-2" style="left: ${LX1}%; color:#3b82f6">${p.s1.landmark}</div>`;
+          html += `<div class="node node-level-2" style="left: ${AX1}%; color:#f43f5e">${p.s1.extra}</div>`;
+        }
+        if (s >= 2) {
+          html += `<div class="node node-level-2" style="left: ${LX2}%; color:#3b82f6">${p.s2.landmark}</div>`;
+          html += `<div class="node node-level-2" style="left: ${AX2}%; color:#f43f5e">${p.s2.extra}</div>`;
+        }
+        if (s >= 3)
+          html += `<div class="node node-level-3" style="left: ${LC}%; color: #2563eb; border: 2px solid #bfdbfe;">${lA}</div>`;
+        if (s >= 4)
+          html += `<div class="node node-level-3" style="left: ${AC}%; color: #dc2626; border: 2px solid #fecaca;">${eA}</div>`;
+        if (s >= 5)
+          html += `<div class="node node-level-4" style="left: ${FINAL}%">${p.num1 - p.num2}</div>`;
+
+        area.innerHTML = html + `</div>`;
+      }
+
+      function renderLearnInstructions(area, p) {
+        const steps = [
+          "Let's solve <span class='text-purple-600 font-bold'>87 - 26</span>. Watch how the hidden parts split apart!",
+          "<span class='text-purple-600 font-bold'>87</span> is close to 90. So we split it into <span class='text-blue-500'>90</span> and <span class='text-red-500'>-3</span>.",
+          "Next, <span class='text-purple-600 font-bold'>26</span> is close to 30. Split it into <span class='text-blue-500'>30</span> and <span class='text-red-500'>-4</span>.",
+          "Now we subtract the Big Landmarks: <span class='text-blue-600 font-bold'>90 - 30 = 60</span>.",
+          "Then the Small Adjustments: <span class='text-red-600 font-bold'>-3 - (-4) = 1</span>.",
+          "Finally, join the results: <span class='text-green-600 font-bold'>60 + 1 = 61</span>. You did it!",
+          "",
         ];
 
         if (state.step < 6) {
-          area.innerHTML = `<div class="flex flex-col items-center justify-center fade-in py-4">
-                    <p class="learn-instruction">${learnSteps[state.step].text}</p>
-                    <button onclick="nextLearnStep()" class="next-btn mt-6">${learnSteps[state.step].btn}</button>
+          area.innerHTML = `<div class="flex flex-col items-center fade-slide-in">
+                    <p class="text-2xl font-semibold text-gray-600 text-center mb-6 leading-tight">${steps[state.step]}</p>
+                    <button onclick="nextLearnStep()" class="next-btn">${state.step === 5 ? "FINISH" : "NEXT"}</button>
                 </div>`;
         } else {
-          card.classList.add("finished");
           area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in">
-                    <div class="congrats-text">LESSON COMPLETE!</div>
-                    <div class="final-result-text">MASTERED: 87 - 26 = 61</div>
-                    <button onclick="state.view='menu'; renderShell()" class="w-full py-7 bg-green-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-12 hover:scale-105 active:scale-95 transition-all">BACK TO MENU</button>
+                    <div class="congrats-text text-green-500">SHORTCUT MASTERED!</div>
+                    <button onclick="state.view='menu'; renderShell()" class="w-full py-7 bg-blue-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-8 hover:scale-105 active:scale-95 transition-all">MAIN MENU</button>
                 </div>`;
         }
       }
 
-      function renderPracticeFlow(area, card, p) {
+      function renderPracticeGame(area, tree, p) {
+        tree.innerHTML = ""; // Hide tree in practice
+        const stack = state.history
+          .map((txt) => `<div class="history-item show">${txt}</div>`)
+          .join("");
+        document.getElementById("stack-area").innerHTML = stack;
+        document.getElementById("active-container").innerHTML =
+          `<div class="sum-text sum-center">${state.activeSum || p.num1 + " - " + p.num2}</div>`;
+
         if (state.step === 0) area.innerHTML = renderDecomp(p.num1, p.opts1);
         else if (state.step === 1)
           area.innerHTML = renderDecomp(p.num2, p.opts2);
         else if (state.step < 5) area.innerHTML = renderSolve(p);
         else {
-          card.classList.add("finished");
+          document.getElementById("game-card").classList.add("finished");
           area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in">
                     <div class="congrats-text">CONGRATULATIONS!</div>
-                    <div class="final-result-text">RESULT: ${p.num1 - p.num2}</div>
-                    <button onclick="generateProblem()" class="w-full py-7 bg-green-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-12 hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
+                    <div class="step-math-highlight text-5xl font-black text-purple-600 mt-2">RESULT: ${p.num1 - p.num2}</div>
+                    <button onclick="generateProblem()" class="w-full py-7 bg-green-500 text-white rounded-[2.5rem] font-black text-4xl shadow-xl mt-10 hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
                 </div>`;
         }
       }
 
       function renderDecomp(num, opts) {
         return `<div class="w-full fade-in flex flex-col items-center">
-                <p class="text-sm font-bold text-gray-300 uppercase tracking-widest mb-1">Simplify Now</p>
-                <div class="focus-zone mb-2"><span class="target-num">${num}</span></div>
+                <div class="focus-zone mb-4"><span class="target-num">${num}</span></div>
                 <div class="grid grid-cols-2 gap-4 w-full">
                     ${opts.map((o, i) => `<button id="opt-${i}" onclick="handleOptionClick(${i}, ${o.c}, 'opt-${i}')" class="option-btn p-5 bg-white border-2 border-purple-100 rounded-[2.5rem] text-3xl font-black text-purple-700 hover:border-purple-300 active:scale-95 transition-all">${o.t}</button>`).join("")}
                 </div>
@@ -738,9 +705,9 @@
         const lA = p.s1.landmark - p.s2.landmark,
           eA = p.s1.extra - p.s2.extra,
           total = p.num1 - p.num2;
-        let c = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
+        let html = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
         if (state.step === 2) {
-          c += `<div class="w-full p-6 bg-blue-50 rounded-[3rem] border-2 border-blue-100 flex flex-col items-center fade-in">
+          html += `<div class="w-full p-6 bg-blue-50 rounded-[3rem] border-2 border-blue-100 flex flex-col items-center fade-in">
                     <span class="step-label text-blue-500">3. Subtract Landmarks</span>
                     <div class="step-math-highlight text-blue-600">${p.s1.landmark} - ${p.s2.landmark}</div>
                     <div class="flex gap-4 mt-2">
@@ -748,7 +715,7 @@
                         <button onclick="checkInput('l_in', ${lA})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 3) {
-          c += `<div class="w-full p-6 bg-green-50 rounded-[3rem] border-2 border-green-100 flex flex-col items-center fade-in">
+          html += `<div class="w-full p-6 bg-green-50 rounded-[3rem] border-2 border-green-100 flex flex-col items-center fade-in">
                     <span class="step-label text-green-500">4. Adjustments</span>
                     <div class="step-math-highlight text-green-600">${resolveDisplay(p.s1.extra, p.s2.extra)}</div>
                     <div class="flex gap-4 mt-2">
@@ -756,15 +723,15 @@
                         <button onclick="checkInput('e_in', ${eA})" class="bg-green-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 4) {
-          c += `<div class="w-full p-8 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
+          html += `<div class="w-full p-8 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
                     <span class="step-label text-yellow-700">Final Total</span>
-                    <div class="text-5xl font-black text-yellow-600 mb-4">${resolveDisplay(lA, eA, "+")}</div>
+                    <div class="text-5xl font-black text-yellow-600 mb-4">${resolveDisplay(lA, eA)}</div>
                     <div class="flex gap-4">
                         <input id="f_in" type="number" autofocus placeholder="?" class="w-48 text-center text-6xl font-black bg-white rounded-[2rem] p-4 border-4 border-yellow-500 focus:outline-none">
                         <button onclick="checkInput('f_in', ${total})" class="bg-yellow-500 text-white px-12 py-6 rounded-[2rem] font-black text-3xl shadow-xl active:scale-95 transition-all">CHECK</button>
                     </div></div>`;
         }
-        return c + `</div>`;
+        return html + `</div>`;
       }
 
       const confettiArr = [];
@@ -800,7 +767,6 @@
         anim();
       }
 
-      state.view = "menu";
       renderShell();
     </script>
   </body>
