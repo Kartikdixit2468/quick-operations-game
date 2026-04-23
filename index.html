@@ -42,16 +42,32 @@
 
       /* 3-Column Layout Animations */
       @keyframes slideInLeft {
-        from { opacity: 0; transform: translateX(-50px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+          opacity: 0;
+          transform: translateX(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
       @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(50px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
-      
-      .slide-left { animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-      .slide-right { animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+      .slide-left {
+        animation: slideInLeft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      .slide-right {
+        animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
 
       /* Full Tree Visualizer - SPACIOUS & CENTERED */
       .tree-viewport {
@@ -86,10 +102,14 @@
         z-index: 10;
       }
 
-      .node-level-1 { font-size: 3.5rem; color: #374151; top: 0px; }
+      .node-level-1 {
+        font-size: 3.5rem;
+        color: #374151;
+        top: 0px;
+      }
       .node-level-2 {
         font-size: 2rem;
-        top: 85px; 
+        top: 85px;
         padding: 0.25rem 1rem;
         border-radius: 1rem;
         background: white;
@@ -98,7 +118,7 @@
       }
       .node-level-3 {
         font-size: 1.8rem;
-        top: 175px; 
+        top: 175px;
         padding: 0.5rem 1.25rem;
         border-radius: 1.5rem;
         background: white;
@@ -107,7 +127,7 @@
       .node-level-4 {
         font-size: 4rem;
         color: #10b981;
-        top: 250px; 
+        top: 250px;
         text-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
       }
 
@@ -121,7 +141,11 @@
         opacity: 0.7;
       }
 
-      @keyframes growRoot { to { stroke-dashoffset: 0; } }
+      @keyframes growRoot {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
 
       /* Step Area Animations */
       .step-area {
@@ -132,10 +156,18 @@
         justify-content: center;
       }
 
-      .fade-slide-in { animation: fadeSlideIn 0.5s both; }
+      .fade-slide-in {
+        animation: fadeSlideIn 0.5s both;
+      }
       @keyframes fadeSlideIn {
-        from { opacity: 0; transform: translateX(30px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
       .next-btn {
@@ -149,11 +181,18 @@
         transition: all 0.2s;
         box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
       }
-      .next-btn:active { transform: translateY(3px); border-bottom-width: 3px; }
+      .next-btn:active {
+        transform: translateY(3px);
+        border-bottom-width: 3px;
+      }
 
       /* Shared Components */
       .focus-zone {
-        background: radial-gradient(circle, rgba(216, 180, 254, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        background: radial-gradient(
+          circle,
+          rgba(216, 180, 254, 0.2) 0%,
+          rgba(255, 255, 255, 0) 70%
+        );
         padding: 0.75rem;
         border-radius: 50%;
         display: flex;
@@ -162,17 +201,39 @@
         animation: focus-pulse 2s infinite ease-in-out;
       }
       @keyframes focus-pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.08); }
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.08);
+        }
       }
 
-      .target-num { font-size: 5rem; font-weight: 900; color: #9333ea; text-shadow: 0 4px 15px rgba(147, 51, 234, 0.25); }
-      .option-btn { transition: all 0.2s; box-shadow: 0 4px 0 rgba(147, 51, 234, 0.1); }
-      .vibrate { animation: vibrate 0.3s linear; }
+      .target-num {
+        font-size: 5rem;
+        font-weight: 900;
+        color: #9333ea;
+        text-shadow: 0 4px 15px rgba(147, 51, 234, 0.25);
+      }
+      .option-btn {
+        transition: all 0.2s;
+        box-shadow: 0 4px 0 rgba(147, 51, 234, 0.1);
+      }
+      .vibrate {
+        animation: vibrate 0.3s linear;
+      }
       @keyframes vibrate {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-8px); }
-        75% { transform: translateX(8px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-8px);
+        }
+        75% {
+          transform: translateX(8px);
+        }
       }
 
       /* Interactive Equation Number Highlights */
@@ -201,23 +262,54 @@
         transform: scale(1.05);
       }
       @keyframes numPulse {
-        0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
-        70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        0% {
+          box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+        }
       }
     </style>
   </head>
   <body class="bg-orange-50">
-    <div id="help-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-6" onclick="toggleHelp(false)">
-      <div class="bg-white p-10 rounded-[3rem] max-w-lg w-full text-center shadow-2xl" onclick="event.stopPropagation()">
+    <div
+      id="help-modal"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-6"
+      onclick="toggleHelp(false)"
+    >
+      <div
+        class="bg-white p-10 rounded-[3rem] max-w-lg w-full text-center shadow-2xl"
+        onclick="event.stopPropagation()"
+      >
         <h2 class="text-4xl font-black text-blue-600 mb-4">How to Play</h2>
         <div class="space-y-4 text-xl text-gray-600 font-medium">
-          <p>1️⃣ Break numbers into <span class="text-blue-500 font-bold">Tens</span> and <span class="text-red-500 font-bold">Ones</span>.</p>
-          <p>2️⃣ Subtract the <span class="text-blue-500 font-bold">Tens</span> together.</p>
-          <p>3️⃣ Subtract the <span class="text-red-500 font-bold">Ones</span> together.</p>
-          <p>4️⃣ <span class="text-green-500 font-bold">Add</span> those two results to get the Final Total!</p>
+          <p>
+            1️⃣ Break numbers into
+            <span class="text-blue-500 font-bold">Tens</span> and
+            <span class="text-red-500 font-bold">Ones</span>.
+          </p>
+          <p>
+            2️⃣ Subtract the
+            <span class="text-blue-500 font-bold">Tens</span> together.
+          </p>
+          <p>
+            3️⃣ Subtract the
+            <span class="text-red-500 font-bold">Ones</span> together.
+          </p>
+          <p>
+            4️⃣ <span class="text-green-500 font-bold">Add</span> those two
+            results to get the Final Total!
+          </p>
         </div>
-        <button onclick="toggleHelp(false)" class="mt-8 w-full py-4 bg-blue-500 text-white rounded-2xl font-black text-xl shadow-lg">GOT IT!</button>
+        <button
+          onclick="toggleHelp(false)"
+          class="mt-8 w-full py-4 bg-blue-500 text-white rounded-2xl font-black text-xl shadow-lg"
+        >
+          GOT IT!
+        </button>
       </div>
     </div>
 
@@ -226,22 +318,42 @@
 
     <script>
       // --- AUDIO SETUP ---
-      const sfxSelect = new Audio('click.mp3');
+      const sfxSelect = new Audio("clikc.mp3");
       sfxSelect.volume = 0.9;
-      
-      const bgMusic = new Audio('bg_music.mp3');
+
+      const sfxCongrats = new Audio("congrats.mp3");
+      sfxCongrats.volume = 0.9;
+
+      const sfxWrong = new Audio("wrong.mp3");
+      sfxWrong.volume = 0.9;
+
+      const bgMusic = new Audio("bg_music.mp3");
       bgMusic.volume = 0.6;
       bgMusic.loop = true;
 
       function playSelect() {
-          sfxSelect.currentTime = 0; // Reset so rapid clicks play immediately
-          sfxSelect.play().catch(e => console.log('Audio play failed: ', e));
+        sfxSelect.currentTime = 0;
+        sfxSelect.play().catch((e) => console.log("Audio play failed: ", e));
+      }
+
+      function playCongrats() {
+        sfxCongrats.currentTime = 0;
+        sfxCongrats.play().catch((e) => console.log("Audio play failed: ", e));
+      }
+
+      function playWrong() {
+        sfxWrong.currentTime = 0;
+        sfxWrong.play().catch((e) => console.log("Audio play failed: ", e));
       }
 
       function ensureBGM() {
-          if (bgMusic.paused) {
-              bgMusic.play().catch(e => console.log('BGM play failed (needs interaction): ', e));
-          }
+        if (bgMusic.paused) {
+          bgMusic
+            .play()
+            .catch((e) =>
+              console.log("BGM play failed (needs interaction): ", e),
+            );
+        }
       }
       // -------------------
 
@@ -252,12 +364,12 @@
         score: 0,
         isProcessing: false,
         wrongChoices: new Set(),
-        
+
         // State properties for Any-Order Decomposition
         decomp1: false,
         decomp2: false,
-        activeDecomp: null, 
-        showOptions: false
+        activeDecomp: null,
+        showOptions: false,
       };
 
       const icons = {
@@ -268,33 +380,35 @@
 
       // Generates the equation string handling interactive buttons
       function getRootEquation() {
-          const p = state.currentProblem;
-          if (p.isSimple || state.view === "learn") return `${p.num1} - ${p.num2}`;
+        const p = state.currentProblem;
+        if (p.isSimple || state.view === "learn")
+          return `${p.num1} - ${p.num2}`;
 
-          const getPart = (num, isDecomp, idx) => {
-              if (isDecomp) return `<span class='text-gray-800 px-3'>${num}</span>`;
-              const isPulse = state.activeDecomp ? '' : 'pulse';
-              const isActive = state.activeDecomp === idx ? 'active' : '';
-              return `<span class='interactive-num ${isPulse} ${isActive}' onclick='window.revealOptions(${idx})'>${num}</span>`;
-          };
+        const getPart = (num, isDecomp, idx) => {
+          if (isDecomp) return `<span class='text-gray-800 px-3'>${num}</span>`;
+          const isPulse = state.activeDecomp ? "" : "pulse";
+          const isActive = state.activeDecomp === idx ? "active" : "";
+          return `<span class='interactive-num ${isPulse} ${isActive}' onclick='window.revealOptions(${idx})'>${num}</span>`;
+        };
 
-          const p1 = getPart(p.num1, state.decomp1, 1);
-          const p2 = getPart(p.num2, state.decomp2, 2);
-          
-          return `${p1} - ${p2}`;
+        const p1 = getPart(p.num1, state.decomp1, 1);
+        const p2 = getPart(p.num2, state.decomp2, 2);
+
+        return `${p1} - ${p2}`;
       }
 
-      window.revealOptions = function(idx) {
-          playSelect();
-          if (state.step === 0 || state.step === 1) {
-              state.showOptions = true;
-              state.activeDecomp = idx;
-              renderStepContent();
-          }
+      window.revealOptions = function (idx) {
+        playSelect();
+        if (state.step === 0 || state.step === 1) {
+          state.showOptions = true;
+          state.activeDecomp = idx;
+          renderStepContent();
+        }
       };
 
       // FORMATTERS
-      const formatAdd = (v1, v2) => v2 < 0 ? `${v1} - ${Math.abs(v2)}` : `${v1} + ${v2}`;
+      const formatAdd = (v1, v2) =>
+        v2 < 0 ? `${v1} - ${Math.abs(v2)}` : `${v1} + ${v2}`;
 
       function getSplit(n) {
         const ones = n % 10;
@@ -304,12 +418,14 @@
 
       function toggleHelp(show) {
         playSelect();
-        document.getElementById("help-modal").style.display = show ? "flex" : "none";
+        document.getElementById("help-modal").style.display = show
+          ? "flex"
+          : "none";
       }
 
       function quitToMenu() {
         playSelect();
-        state.view = 'menu';
+        state.view = "menu";
         state.score = 0;
         renderShell();
       }
@@ -317,17 +433,17 @@
       function generateProblem() {
         playSelect();
         ensureBGM();
-        
+
         let n1, n2;
         while (true) {
-            n1 = Math.floor(Math.random() * 60) + 30; // 30 to 89
-            n2 = Math.floor(Math.random() * (n1 - 15)) + 11; // 11 to n1-15
-            const o1 = n1 % 10;
-            const o2 = n2 % 10;
-            
-            if (o1 !== 0 && o1 >= o2) break;
+          n1 = Math.floor(Math.random() * 60) + 30; // 30 to 89
+          n2 = Math.floor(Math.random() * (n1 - 15)) + 11; // 11 to n1-15
+          const o1 = n1 % 10;
+          const o2 = n2 % 10;
+
+          if (o1 !== 0 && o1 >= o2) break;
         }
-        
+
         state.currentProblem = {
           num1: n1,
           num2: n2,
@@ -335,31 +451,42 @@
           s2: getSplit(n2),
           opts1: generateOptions(n1),
           opts2: generateOptions(n2),
-          isSimple: (n1 % 10 === n2 % 10),
-          isN2Zero: (n2 % 10 === 0) 
+          isSimple: n1 % 10 === n2 % 10,
+          isN2Zero: n2 % 10 === 0,
         };
-        
+
         state.step = 0;
         state.view = "practice";
         state.wrongChoices.clear();
+
         state.decomp1 = false;
         state.decomp2 = state.currentProblem.isN2Zero;
-        state.activeDecomp = null;
-        state.showOptions = false;
-        
+
+        // Smart Auto-Select: If num2 is already a zero-ending number, jump straight to num1
+        if (state.decomp2) {
+          state.activeDecomp = 1;
+          state.showOptions = true;
+        } else {
+          state.activeDecomp = null;
+          state.showOptions = false;
+        }
+
         renderShell();
       }
 
       function startLearn() {
         playSelect();
         ensureBGM();
-        
-        const n1 = 87, n2 = 26;
+
+        const n1 = 87,
+          n2 = 26;
         state.currentProblem = {
-          num1: n1, num2: n2,
-          s1: getSplit(n1), s2: getSplit(n2),
+          num1: n1,
+          num2: n2,
+          s1: getSplit(n1),
+          s2: getSplit(n2),
           isSimple: false,
-          isN2Zero: false
+          isN2Zero: false,
         };
         state.step = 0;
         state.view = "learn";
@@ -380,13 +507,16 @@
       }
 
       function generateOptions(n) {
-        const split = getSplit(n), tens = split.tens, ones = split.ones;
+        const split = getSplit(n),
+          tens = split.tens,
+          ones = split.ones;
         let set = new Set([split.display]);
-        
+
         const dists = [
           () => `${tens - 10} + ${ones + 10}`,
           () => `${tens + 10} - ${10 - ones}`,
-          () => `${tens + 5} ${ones > 5 ? "-" : "+"} ${Math.abs(ones - 5) || 2}`,
+          () =>
+            `${tens + 5} ${ones > 5 ? "-" : "+"} ${Math.abs(ones - 5) || 2}`,
         ];
         dists.forEach((l) => {
           let c = l();
@@ -395,9 +525,9 @@
         });
 
         let f = 10;
-        while(set.size < 4) {
-            set.add(`${tens - f} + ${ones + f}`);
-            f += 10;
+        while (set.size < 4) {
+          set.add(`${tens - f} + ${ones + f}`);
+          f += 10;
         }
 
         return Array.from(set)
@@ -407,97 +537,127 @@
       }
 
       function handleOptionClick(idx, isCorrect, btnId) {
-        playSelect();
         if (state.isProcessing) return;
         const btn = document.getElementById(btnId);
 
         if (isCorrect) {
+          playSelect();
+          state.score += 20;
+          updateScoreDisplay();
           state.isProcessing = true;
-          btn.classList.add("border-green-500", "bg-green-50", "ring-4", "ring-green-100");
+
+          btn.classList.add(
+            "border-green-500",
+            "bg-green-50",
+            "ring-4",
+            "ring-green-100",
+          );
 
           if (state.activeDecomp === 1) state.decomp1 = true;
           if (state.activeDecomp === 2) state.decomp2 = true;
-          
-          state.activeDecomp = null;
-          state.showOptions = false;
+
+          // Smart Auto-Select: If one is done, auto-select the remaining one
+          if (state.decomp1 && !state.decomp2) {
+            state.activeDecomp = 2;
+            state.showOptions = true;
+          } else if (!state.decomp1 && state.decomp2) {
+            state.activeDecomp = 1;
+            state.showOptions = true;
+          } else {
+            state.activeDecomp = null;
+            state.showOptions = false;
+          }
 
           renderStepContent();
-          
+
           setTimeout(() => {
             if (state.decomp1 && state.decomp2) {
-                state.step = 2; 
+              state.step = 2;
             } else {
-                state.step++;
+              state.step++;
             }
             state.isProcessing = false;
             renderStepContent();
           }, 600);
         } else {
+          playWrong();
           btn.classList.add("vibrate", "border-red-500", "bg-red-50");
           if (!state.wrongChoices.has(btnId)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(btnId);
             updateScoreDisplay();
           }
-          setTimeout(() => btn.classList.remove("vibrate", "border-red-500", "bg-red-50"), 300);
+          setTimeout(
+            () =>
+              btn.classList.remove("vibrate", "border-red-500", "bg-red-50"),
+            300,
+          );
         }
       }
 
       function checkInput(id, expected) {
-        playSelect();
         if (state.isProcessing) return;
-        const input = document.getElementById(id), val = parseInt(input.value), p = state.currentProblem;
-          
+        const input = document.getElementById(id),
+          val = parseInt(input.value),
+          p = state.currentProblem;
+
         if (val === expected) {
+          playSelect();
+          state.score += 20;
+          updateScoreDisplay();
+
           state.isProcessing = true;
           input.classList.add("border-green-500", "bg-green-50");
 
           if (p.isSimple) {
-              setTimeout(() => {
-                state.step++;
-                state.isProcessing = false;
-                state.score += 20;
-                updateScoreDisplay();
-                triggerConfetti();
-                renderStepContent();
-              }, 800);
-              return;
+            setTimeout(() => {
+              state.step++;
+              state.isProcessing = false;
+              playCongrats();
+              triggerConfetti();
+              renderStepContent();
+            }, 800);
+            return;
           }
 
           setTimeout(() => {
             if (state.step === 2 && p.isN2Zero) {
-                state.step = 4;
+              state.step = 4;
             } else {
-                state.step++;
+              state.step++;
             }
 
             state.isProcessing = false;
             if (state.step === 5) {
-              state.score += 20;
-              updateScoreDisplay();
+              playCongrats();
               triggerConfetti();
             }
             renderStepContent();
           }, 800);
         } else {
+          playWrong();
           input.classList.add("vibrate", "border-red-500", "bg-red-50");
           if (!state.wrongChoices.has(id)) {
             state.score = Math.max(0, state.score - 5);
             state.wrongChoices.add(id);
             updateScoreDisplay();
           }
-          setTimeout(() => input.classList.remove("vibrate", "border-red-500", "bg-red-50"), 300);
+          setTimeout(
+            () =>
+              input.classList.remove("vibrate", "border-red-500", "bg-red-50"),
+            300,
+          );
         }
       }
 
       function updateScoreDisplay() {
         const scoreVal = document.getElementById("score-val");
-        if(scoreVal) scoreVal.innerText = state.score;
+        if (scoreVal) scoreVal.innerText = state.score;
       }
 
       function renderShell() {
         const app = document.getElementById("app");
-        
+
         if (state.view === "menu") {
           app.className = "game-container max-w-2xl mx-auto w-full";
           app.innerHTML = `<div class="flex flex-col items-center fade-in text-center">
@@ -543,7 +703,8 @@
       }
 
       function renderStepContent() {
-        const stepArea = document.getElementById("step-area"), treeArea = document.getElementById("tree-area");
+        const stepArea = document.getElementById("step-area"),
+          treeArea = document.getElementById("tree-area");
         if (!stepArea || !treeArea) return;
         const p = state.currentProblem;
 
@@ -558,18 +719,23 @@
       function renderTree(area, p) {
         const s = state.step;
         const v = state.view;
-        
-        const showSplit1 = v === 'learn' ? s >= 1 : state.decomp1;
-        const showSplit2 = v === 'learn' ? s >= 2 : state.decomp2;
-        const showTens = v === 'learn' ? s >= 3 : s >= 3;
-        const showOnes = v === 'learn' ? s >= 4 : s >= 4;
-        const showFinal = v === 'learn' ? s >= 5 : s >= 5;
+
+        const showSplit1 = v === "learn" ? s >= 1 : state.decomp1;
+        const showSplit2 = v === "learn" ? s >= 2 : state.decomp2;
+        const showTens = v === "learn" ? s >= 3 : s >= 3;
+        const showOnes = v === "learn" ? s >= 4 : s >= 4;
+        const showFinal = v === "learn" ? s >= 5 : s >= 5;
 
         const tensDiff = p.s1.tens - p.s2.tens;
         const onesDiff = p.s1.ones - p.s2.ones;
 
-        const LX1 = 20, AX1 = 38, LX2 = 62, AX2 = 80;
-        const LC = 42, AC = 58, FINAL = 50;
+        const LX1 = 20,
+          AX1 = 38,
+          LX2 = 62,
+          AX2 = 80;
+        const LC = 42,
+          AC = 58,
+          FINAL = 50;
 
         let html = `<div class="tree-viewport">
                 <svg class="tree-svg">
@@ -625,20 +791,21 @@
       }
 
       function renderPracticeGame(area, tree, p) {
-        renderTree(tree, p); 
+        renderTree(tree, p);
 
         if (p.isSimple) {
-            if (state.step === 0) area.innerHTML = renderSimpleSolve(p);
-            else {
-              area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in mt-2">
+          if (state.step === 0) area.innerHTML = renderSimpleSolve(p);
+          else {
+            area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in mt-2">
                         <div class="text-3xl font-black text-blue-500 tracking-widest uppercase mb-4 drop-shadow-sm">Bonus Cleared!</div>
                         <button onclick="generateProblem()" class="w-full py-5 bg-blue-500 text-white rounded-[2rem] font-black text-4xl shadow-xl hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
                     </div>`;
-            }
-            return;
+          }
+          return;
         }
 
-        if (state.step === 0 || state.step === 1) area.innerHTML = renderDecomp();
+        if (state.step === 0 || state.step === 1)
+          area.innerHTML = renderDecomp();
         else if (state.step < 5) area.innerHTML = renderSolve(p);
         else {
           area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in mt-0">
@@ -667,8 +834,8 @@
       function renderDecomp() {
         const p = state.currentProblem;
         if (!state.showOptions) {
-            const targetIdx = !state.decomp1 ? 1 : 2;
-            return `<div class="w-full fade-in flex flex-col items-center justify-center py-6 mt-4">
+          const targetIdx = !state.decomp1 ? 1 : 2;
+          return `<div class="w-full fade-in flex flex-col items-center justify-center py-6 mt-4">
                 <div class="text-2xl font-bold text-purple-500 animate-bounce flex items-center gap-3 bg-purple-50 px-8 py-4 rounded-full border-2 border-purple-200 shadow-sm cursor-pointer" onclick="window.revealOptions(${targetIdx})">
                     👉 Choose any number by clicking above in the problem.
                 </div>
@@ -688,7 +855,7 @@
         const tensDiff = p.s1.tens - p.s2.tens;
         const onesDiff = p.s1.ones - p.s2.ones;
         const total = p.num1 - p.num2;
-        
+
         let html = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
         if (state.step === 2) {
           const stepLabel = p.isN2Zero ? "2" : "3";
@@ -697,7 +864,7 @@
                     <div class="text-3xl font-black text-blue-600 mb-4">${p.s1.tens} - ${p.s2.tens}</div>
                     <div class="flex gap-4 mt-2">
                         <input id="l_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-blue-400 focus:outline-none">
-                        <button onclick="checkInput('l_in', ${tensDiff})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
+                        <button onclick="checkInput('l_in', ${tensDiff})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 3) {
           html += `<div class="w-full p-6 bg-red-50 rounded-[3rem] border-2 border-red-100 flex flex-col items-center fade-in mt-4">
@@ -708,10 +875,10 @@
                         <button onclick="checkInput('e_in', ${onesDiff})" class="bg-red-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
                     </div></div>`;
         } else if (state.step === 4) {
-          const logicString = p.isN2Zero 
-              ? `(${p.s1.tens} - ${p.num2}) + ${p.s1.ones}`
-              : `(${p.s1.tens} - ${p.s2.tens}) + (${p.s1.ones} - ${p.s2.ones})`;
-              
+          const logicString = p.isN2Zero
+            ? `(${p.s1.tens} - ${p.num2}) + ${p.s1.ones}`
+            : `(${p.s1.tens} - ${p.s2.tens}) + (${p.s1.ones} - ${p.s2.ones})`;
+
           html += `<div class="w-full p-6 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
                     <span class="text-xl font-black text-yellow-700 mb-2 uppercase tracking-widest">Final Total</span>
                     
