@@ -279,17 +279,17 @@
 
     <script>
       // --- AUDIO SETUP ---
-      const sfxSelect = new Audio("select.mp3");
+      const sfxSelect = new Audio("../clikc.mp3");
       sfxSelect.volume = 0.9;
 
-      const sfxCongrats = new Audio("congrats.mp3");
+      const sfxCongrats = new Audio("../congrats.mp3");
       sfxCongrats.volume = 0.9;
 
-      const sfxWrong = new Audio("wrong.mp3");
+      const sfxWrong = new Audio("../wrong.mp3");
       sfxWrong.volume = 0.9;
 
-      const bgMusic = new Audio("background_music.mp3");
-      bgMusic.volume = 0.6;
+      const bgMusic = new Audio("../bg_music.mp3");
+      bgMusic.volume = 0.4;
       bgMusic.loop = true;
 
       function playSelect() {
@@ -370,6 +370,23 @@
         return { tens: tens, ones: ones, display: `${tens} + ${ones}` };
       }
 
+      // Generates logical MCQs for the calculation steps
+      function generateMathOptions(correctVal, type) {
+        let set = new Set([correctVal]);
+        let offset = type === "tens" ? 10 : type === "ones" ? 1 : 5;
+
+        while (set.size < 4) {
+          let mod = Math.random() > 0.5 ? 1 : -1;
+          let val =
+            correctVal + mod * offset * (Math.floor(Math.random() * 3) + 1);
+          if (val >= 0) set.add(val);
+        }
+
+        return Array.from(set)
+          .sort((a, b) => a - b)
+          .map((v) => ({ text: v, correct: v === correctVal }));
+      }
+
       function toggleHelp(show) {
         playSelect();
         document.getElementById("help-modal").style.display = show
@@ -402,7 +419,7 @@
           s2: getSplit(n2),
           opts1: generateOptions(n1),
           opts2: generateOptions(n2),
-          isSimple: n1 % 10 === 0 && n2 % 10 === 0,
+          isSimple: false,
           isN2Zero: n2 % 10 === 0,
         };
 
@@ -412,14 +429,9 @@
         state.decomp1 = false;
         state.decomp2 = state.currentProblem.isN2Zero;
 
-        // Smart Auto-Select
-        if (state.decomp2) {
-          state.activeDecomp = 1;
-          state.showOptions = true;
-        } else {
-          state.activeDecomp = null;
-          state.showOptions = false;
-        }
+        // Reset so user MUST click the number to start
+        state.activeDecomp = null;
+        state.showOptions = false;
 
         renderShell();
       }
@@ -428,11 +440,19 @@
         playSelect();
         ensureBGM();
 
+        let n1, n2;
+        while (true) {
+          n1 = Math.floor(Math.random() * 50) + 21;
+          n2 = Math.floor(Math.random() * 40) + 11;
+          if (n1 % 10 !== 0 && n2 % 10 !== 0) break;
+        }
+
         state.currentProblem = {
-          num1: 44,
-          num2: 23,
-          s1: getSplit(44),
-          s2: getSplit(23),
+          num1: n1,
+          num2: n2,
+          s1: getSplit(n1),
+          s2: getSplit(n2),
+          isSimple: false,
           isN2Zero: false,
         };
         state.step = 0;
@@ -480,6 +500,51 @@
           .slice(0, 4)
           .map((t) => ({ t, c: t === split.display }))
           .sort(() => Math.random() - 0.5);
+      }
+
+      function handleStepChoice(isCorrect, btnId) {
+        if (state.isProcessing) return;
+        const btn = document.getElementById(btnId);
+
+        if (isCorrect) {
+          playSelect();
+          state.score += 20;
+          updateScoreDisplay();
+          state.isProcessing = true;
+          btn.classList.add(
+            "border-green-500",
+            "bg-green-50",
+            "ring-4",
+            "ring-green-100",
+          );
+
+          setTimeout(() => {
+            if (state.step === 2 && state.currentProblem.isN2Zero) {
+              state.step = 4;
+            } else {
+              state.step++;
+            }
+            state.isProcessing = false;
+            if (state.step === 5) {
+              playCongrats();
+              triggerConfetti();
+            }
+            renderStepContent();
+          }, 600);
+        } else {
+          playWrong();
+          btn.classList.add("vibrate", "border-red-500", "bg-red-50");
+          if (!state.wrongChoices.has(btnId)) {
+            state.score = Math.max(0, state.score - 5);
+            state.wrongChoices.add(btnId);
+            updateScoreDisplay();
+          }
+          setTimeout(
+            () =>
+              btn.classList.remove("vibrate", "border-red-500", "bg-red-50"),
+            300,
+          );
+        }
       }
 
       function handleOptionClick(idx, isCorrect, btnId) {
@@ -541,61 +606,6 @@
         }
       }
 
-      function checkInput(id, expected) {
-        if (state.isProcessing) return;
-        const input = document.getElementById(id),
-          val = parseInt(input.value),
-          p = state.currentProblem;
-
-        if (val === expected) {
-          playSelect();
-          state.score += 20;
-          updateScoreDisplay();
-
-          state.isProcessing = true;
-          input.classList.add("border-green-500", "bg-green-50");
-
-          if (p.isSimple) {
-            setTimeout(() => {
-              state.step++;
-              state.isProcessing = false;
-              playCongrats();
-              triggerConfetti();
-              renderStepContent();
-            }, 800);
-            return;
-          }
-
-          setTimeout(() => {
-            if (state.step === 2 && p.isN2Zero) {
-              state.step = 4;
-            } else {
-              state.step++;
-            }
-
-            state.isProcessing = false;
-            if (state.step === 5) {
-              playCongrats();
-              triggerConfetti();
-            }
-            renderStepContent();
-          }, 800);
-        } else {
-          playWrong();
-          input.classList.add("vibrate", "border-red-500", "bg-red-50");
-          if (!state.wrongChoices.has(id)) {
-            state.score = Math.max(0, state.score - 5);
-            state.wrongChoices.add(id);
-            updateScoreDisplay();
-          }
-          setTimeout(
-            () =>
-              input.classList.remove("vibrate", "border-red-500", "bg-red-50"),
-            300,
-          );
-        }
-      }
-
       function updateScoreDisplay() {
         const scoreVal = document.getElementById("score-val");
         if (scoreVal) scoreVal.innerText = state.score;
@@ -608,8 +618,8 @@
           app.className = "game-container max-w-2xl mx-auto w-full";
           app.innerHTML = `<div class="flex flex-col items-center fade-in text-center">
                     <div class="mb-4 text-green-600 drop-shadow-lg">${icons.brain}</div>
-                    <h1 class="text-7xl font-black text-orange-800 mb-2 tracking-tight">Math Mind</h1>
-                    <p class="text-3xl text-gray-400 mb-10 italic">Split & Add Method!</p>
+                    <h1 class="text-7xl font-black text-green-800 mb-2 tracking-tight">Math Mind</h1>
+                    <p class="text-3xl text-gray-400 mb-10 italic">Quick Addition Shortcut!</p>
                     <div class="flex flex-col gap-4 w-full max-w-sm">
                         <button onclick="startLearn()" class="p-8 bg-blue-500 border-b-8 border-blue-700 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Learn Shortcut</button>
                         <button onclick="generateProblem()" class="p-8 bg-green-600 border-b-8 border-green-800 rounded-[3rem] text-3xl font-bold text-white shadow-2xl active:scale-95 transition-all uppercase">Play Game</button>
@@ -630,7 +640,7 @@
                     </button>
                 </div>
 
-                <div id="game-card" class="w-full bg-white rounded-[4rem] shadow-2xl p-6 lg:p-8 relative flex-grow flex flex-col items-center border-b-[12px] border-orange-100 overflow-hidden h-[92vh] max-h-[900px] max-w-4xl z-10">
+                <div id="game-card" class="w-full bg-white rounded-[4rem] shadow-2xl p-6 lg:p-8 relative flex-grow flex flex-col items-center border-b-[12px] border-green-100 overflow-hidden h-[92vh] max-h-[900px] max-w-4xl z-10">
                     <div id="tree-area" class="w-full"></div>
                     <div id="step-area" class="step-area flex-grow"></div>
                 </div>
@@ -668,9 +678,9 @@
 
         const showSplit1 = v === "learn" ? s >= 1 : state.decomp1;
         const showSplit2 = v === "learn" ? s >= 2 : state.decomp2;
-        const showTens = s >= 3 || (v === "practice" && s >= 3);
-        const showOnes = s >= 4 || (v === "practice" && s >= 4);
-        const showFinal = s >= 5 || (v === "practice" && s >= 5);
+        const showTens = s >= 3;
+        const showOnes = s >= 4;
+        const showFinal = s >= 5;
 
         const tensSum = p.s1.tens + p.s2.tens;
         const onesSum = p.s1.ones + p.s2.ones;
@@ -706,6 +716,8 @@
           html += `<div class="node node-level-3" style="left: ${LC}%; color: #2563eb; border: 2px solid #bfdbfe;">${tensSum}</div>`;
         if (showOnes)
           html += `<div class="node node-level-3" style="left: ${AC}%; color: #dc2626; border: 2px solid #fecaca;">${onesSum}</div>`;
+        if (showTens && showOnes)
+          html += `<div class="node font-black text-gray-400" style="left: 50%; top: 180px; font-size: 2.2rem;">+</div>`;
         if (showFinal)
           html += `<div class="node node-level-4" style="left: ${FINAL}%">${p.num1 + p.num2}</div>`;
 
@@ -713,13 +725,17 @@
       }
 
       function renderLearnInstructions(area, p) {
+        const tensSum = p.s1.tens + p.s2.tens;
+        const onesSum = p.s1.ones + p.s2.ones;
+        const total = p.num1 + p.num2;
+
         const steps = [
-          "Let's solve <span class='text-green-600 font-bold'>44 + 23</span>. Watch how we break them into Tens and Ones!",
-          "<span class='text-green-600 font-bold'>44</span> is <span class='text-blue-500 font-bold'>40</span> and <span class='text-red-500 font-bold'>4</span>.",
-          "Next, <span class='text-green-600 font-bold'>23</span> is <span class='text-blue-500 font-bold'>20</span> and <span class='text-red-500 font-bold'>3</span>.",
-          "First, add the Tens: <span class='text-blue-600 font-bold'>40 + 20 = 60</span>.",
-          "Next, add the Ones: <span class='text-red-600 font-bold'>4 + 3 = 7</span>.",
-          "Finally, join the results: <span class='text-green-600 font-bold'>60 + 7 = 67</span>. You did it!",
+          `Let's solve <span class='text-green-600 font-bold'>${p.num1} + ${p.num2}</span>.`,
+          `<span class='text-green-600 font-bold'>${p.num1}</span> is <span class='text-blue-500 font-bold'>${p.s1.tens}</span> and <span class='text-red-500 font-bold'>${p.s1.ones}</span>.`,
+          `Next, <span class='text-green-600 font-bold'>${p.num2}</span> is <span class='text-blue-500 font-bold'>${p.s2.tens}</span> and <span class='text-red-500 font-bold'>${p.s2.ones}</span>.`,
+          `First, add the Tens: <span class='text-blue-600 font-bold'>${p.s1.tens} + ${p.s2.tens} = ${tensSum}</span>.`,
+          `Next, add the Ones: <span class='text-red-600 font-bold'>${p.s1.ones} + ${p.s2.ones} = ${onesSum}</span>.`,
+          `Finally, join them: <span class='text-green-600 font-bold'>${tensSum} + ${onesSum} = ${total}</span>.`,
           "",
         ];
 
@@ -731,27 +747,13 @@
         } else {
           area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in">
                     <div class="text-3xl font-black text-gray-500 mb-6 text-center uppercase tracking-widest">Lesson Complete</div>
-                    <button onclick="quitToMenu()" class="w-full py-5 bg-blue-500 text-white rounded-[2rem] font-black text-3xl shadow-xl mt-2 hover:scale-105 active:scale-95 transition-all">MAIN MENU</button>
+                    <button onclick="startLearn()" class="w-full py-5 bg-green-500 text-white rounded-[2rem] font-black text-3xl shadow-xl mt-2 hover:scale-105 active:scale-95 transition-all">ANOTHER EXAMPLE</button>
                 </div>`;
         }
       }
 
       function renderPracticeGame(area, tree, p) {
         renderTree(tree, p);
-
-        const isFinished =
-          (p.isSimple && state.step >= 1) || (!p.isSimple && state.step >= 5);
-
-        if (p.isSimple) {
-          if (state.step === 0) area.innerHTML = renderSimpleSolve(p);
-          else {
-            area.innerHTML = `<div class="w-full flex flex-col items-center justify-center fade-in mt-2">
-                        <div class="text-3xl font-black text-blue-500 tracking-widest uppercase mb-4 drop-shadow-sm">Bonus Cleared!</div>
-                        <button onclick="generateProblem()" class="w-full py-5 bg-blue-500 text-white rounded-[2rem] font-black text-4xl shadow-xl hover:scale-105 active:scale-95 transition-all">NEXT MISSION</button>
-                    </div>`;
-          }
-          return;
-        }
 
         if (state.step === 0 || state.step === 1)
           area.innerHTML = renderDecomp();
@@ -765,28 +767,11 @@
         }
       }
 
-      function renderSimpleSolve(p) {
-        const total = p.num1 + p.num2;
-        return `<div class="w-full flex flex-col items-center fade-in space-y-6">
-            <div class="w-full p-8 bg-blue-50 rounded-[4rem] border-4 border-blue-300 flex flex-col items-center shadow-md fade-in relative overflow-hidden mt-6">
-                <div class="absolute top-0 right-0 bg-blue-500 text-white px-8 py-2 rounded-bl-[2rem] font-black tracking-widest text-lg">BONUS!</div>
-                <span class="text-2xl font-black text-blue-700 mb-2 uppercase tracking-widest mt-4">Same Ones Digit!</span>
-                <div class="text-xl font-bold text-gray-500 mb-6 text-center max-w-sm">The ones digits are zero. Just add the tens!</div>
-                <div class="text-6xl font-black text-blue-600 mb-6">${p.s1.tens} + ${p.s2.tens}</div>
-                <div class="flex gap-4">
-                    <input id="simple_in" type="number" autofocus placeholder="?" class="w-48 text-center text-6xl font-black bg-white rounded-[2rem] p-4 border-4 border-blue-500 focus:outline-none">
-                    <button onclick="checkInput('simple_in', ${total})" class="bg-blue-500 text-white px-12 py-6 rounded-[2rem] font-black text-3xl shadow-xl active:scale-95 transition-all">CHECK</button>
-                </div>
-            </div>
-        </div>`;
-      }
-
       function renderDecomp() {
         const p = state.currentProblem;
         if (!state.showOptions) {
-          const targetIdx = !state.decomp1 ? 1 : 2;
-          return `<div class="w-full fade-in flex flex-col items-center justify-center py-6 mt-4">
-                <div class="text-2xl font-bold text-green-600 animate-bounce flex items-center gap-3 bg-green-50 px-8 py-4 rounded-full border-2 border-green-200 shadow-sm cursor-pointer" onclick="window.revealOptions(${targetIdx})">
+          return `<div class="w-full fade-in flex flex-col items-center justify-center py-4">
+                <div class="text-xl font-bold text-green-600 animate-bounce flex items-center gap-3 bg-green-50 px-6 py-3 rounded-full border-2 border-green-200 shadow-sm cursor-default">
                     👉 Choose any number by clicking above.
                 </div>
             </div>`;
@@ -806,43 +791,50 @@
         const onesSum = p.s1.ones + p.s2.ones;
         const total = p.num1 + p.num2;
 
-        let html = `<div class="w-full flex flex-col items-center fade-in space-y-6">`;
+        let correctVal, label, offsetType;
         if (state.step === 2) {
-          const stepLabel = p.isN2Zero ? "2" : "3";
-          html += `<div class="w-full p-6 bg-blue-50 rounded-[3rem] border-2 border-blue-100 flex flex-col items-center fade-in mt-4">
-                    <span class="text-xl font-bold text-blue-500 mb-2 uppercase tracking-widest">${stepLabel}. Add Tens</span>
-                    <div class="text-3xl font-black text-blue-600 mb-4">${p.s1.tens} + ${p.s2.tens}</div>
-                    <div class="flex gap-4 mt-2">
-                        <input id="l_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-blue-400 focus:outline-none">
-                        <button onclick="checkInput('l_in', ${tensSum})" class="bg-blue-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
-                    </div></div>`;
+          correctVal = tensSum;
+          label = p.isN2Zero ? "2. Add Tens" : "3. Add Tens";
+          offsetType = "tens";
         } else if (state.step === 3) {
-          html += `<div class="w-full p-6 bg-red-50 rounded-[3rem] border-2 border-red-100 flex flex-col items-center fade-in mt-4">
-                    <span class="text-xl font-bold text-red-500 mb-2 uppercase tracking-widest">4. Add Ones</span>
-                    <div class="text-3xl font-black text-red-600 mb-4">${p.s1.ones} + ${p.s2.ones}</div>
-                    <div class="flex gap-4 mt-2">
-                        <input id="e_in" type="number" autofocus placeholder="?" class="w-36 text-center text-5xl font-black bg-white rounded-3xl p-3 border-4 border-red-400 focus:outline-none">
-                        <button onclick="checkInput('e_in', ${onesSum})" class="bg-red-600 text-white px-10 py-4 rounded-3xl font-bold text-2xl shadow-lg active:scale-95 transition-all">OK</button>
-                    </div></div>`;
+          correctVal = onesSum;
+          label = "4. Add Ones";
+          offsetType = "ones";
         } else if (state.step === 4) {
-          const logicString = p.isN2Zero
-            ? `(${p.s1.tens} + ${p.num2}) + ${p.s1.ones}`
-            : `(${p.s1.tens} + ${p.s2.tens}) + (${p.s1.ones} + ${p.s2.ones})`;
+          correctVal = total;
+          label = "Final Total";
+          offsetType = "final";
+        }
 
-          html += `<div class="w-full p-6 bg-yellow-50 rounded-[4rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
-                    <span class="text-xl font-black text-yellow-700 mb-2 uppercase tracking-widest">Final Total</span>
-                    
-                    <div class="bg-white/60 px-8 py-3 rounded-[2rem] mb-4 flex flex-col items-center border-2 border-yellow-200 shadow-sm w-full max-w-md">
-                        <div class="text-lg font-bold text-gray-400 mb-1">${p.num1} + ${p.num2}</div>
-                        <div class="text-sm font-bold text-yellow-600/70 mb-2">${logicString}</div>
-                        <div class="text-5xl font-black text-yellow-600">${formatAdd(tensSum, p.isN2Zero ? p.s1.ones : onesSum)}</div>
-                    </div>
+        const mcqs = generateMathOptions(correctVal, offsetType);
+        let html = `<div class="w-full flex flex-col items-center fade-in mt-2">`;
 
-                    <div class="flex gap-4">
-                        <input id="f_in" type="number" autofocus placeholder="?" class="w-40 text-center text-5xl font-black bg-white rounded-[2rem] p-3 border-4 border-yellow-500 focus:outline-none">
-                        <button onclick="checkInput('f_in', ${total})" class="bg-yellow-500 text-white px-10 py-5 rounded-[2rem] font-black text-2xl shadow-xl active:scale-95 transition-all">CHECK</button>
+        if (state.step === 4) {
+          const displayLogic = p.isN2Zero
+            ? `${tensSum} + ${p.s1.ones}`
+            : `${tensSum} + ${onesSum}`;
+
+          html += `<div class="w-full p-4 bg-yellow-50 rounded-[3rem] border-4 border-yellow-300 flex flex-col items-center shadow-md fade-in">
+                    <span class="text-lg font-bold text-yellow-600 mb-2 uppercase tracking-widest">${label}</span>
+                    <div class="text-4xl font-black text-yellow-600 mb-4">${displayLogic}</div>
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                        ${mcqs.map((m, i) => `<button id="final-mcq-${i}" onclick="handleStepChoice(${m.correct}, 'final-mcq-${i}')" class="option-btn p-3 bg-white border-2 border-yellow-100 rounded-[1.5rem] text-2xl font-black text-yellow-700 hover:border-yellow-300 active:scale-95 transition-all">${m.text}</button>`).join("")}
+                    </div></div>`;
+        } else {
+          const colorClass = state.step === 2 ? "blue" : "red";
+          const mathDisplay =
+            state.step === 2
+              ? `${p.s1.tens} + ${p.s2.tens}`
+              : `${p.s1.ones} + ${p.s2.ones}`;
+
+          html += `<div class="w-full p-4 bg-${colorClass}-50 rounded-[3rem] border-2 border-${colorClass}-100 flex flex-col items-center fade-in">
+                    <span class="text-lg font-bold text-${colorClass}-500 mb-2 uppercase tracking-widest">${label}</span>
+                    <div class="text-4xl font-black text-${colorClass}-600 mb-4">${mathDisplay}</div>
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                        ${mcqs.map((m, i) => `<button id="mcq-${i}" onclick="handleStepChoice(${m.correct}, 'mcq-${i}')" class="option-btn p-3 bg-white border-2 border-${colorClass}-100 rounded-[1.5rem] text-2xl font-black text-${colorClass}-700 hover:border-${colorClass}-300 active:scale-95 transition-all">${m.text}</button>`).join("")}
                     </div></div>`;
         }
+
         return html + `</div>`;
       }
 
